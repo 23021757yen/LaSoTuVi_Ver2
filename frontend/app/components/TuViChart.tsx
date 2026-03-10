@@ -58,6 +58,7 @@ export type TuViResponse = {
   gioi_tinh: string;
   ngay_sinh_duong_lich: string;
   gio_sinh: number;
+  phut_sinh: number;
   loai_lich_nhap: string;
   nam_xem_han: number;
   can_chi_nam_xem_han: string;
@@ -121,8 +122,32 @@ type KhongVongEdgeLabel = {
   huong: "doc" | "ngang" | "fallback" | "goc-duoi" | "goc-tren";
 };
 
-const THIEN_CAN_VN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
-const DIA_CHI_VN = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
+const THIEN_CAN_VN = [
+  "Giáp",
+  "Ất",
+  "Bính",
+  "Đinh",
+  "Mậu",
+  "Kỷ",
+  "Canh",
+  "Tân",
+  "Nhâm",
+  "Quý",
+];
+const DIA_CHI_VN = [
+  "Tý",
+  "Sửu",
+  "Dần",
+  "Mão",
+  "Thìn",
+  "Tỵ",
+  "Ngọ",
+  "Mùi",
+  "Thân",
+  "Dậu",
+  "Tuất",
+  "Hợi",
+];
 
 const NAP_AM_BY_CAN_CHI_NAM: Record<string, string> = {
   "Giáp Tý": "Hải Trung Kim",
@@ -187,6 +212,21 @@ const NAP_AM_BY_CAN_CHI_NAM: Record<string, string> = {
   "Quý Hợi": "Đại Hải Thủy",
 };
 
+const NGU_HANH_CAN_CHI: Record<string, NguHanh> = {
+  Tý: "thuy",
+  Sửu: "tho",
+  Dần: "moc",
+  Mão: "moc",
+  Thìn: "tho",
+  Tỵ: "hoa",
+  Ngọ: "hoa",
+  Mùi: "tho",
+  Thân: "kim",
+  Dậu: "kim",
+  Tuất: "tho",
+  Hợi: "thuy",
+};
+
 const PALACE_LAYOUT: PalaceCell[] = [
   { idx: 5, row: 1, col: 1 },
   { idx: 6, row: 1, col: 2 },
@@ -243,6 +283,7 @@ const STAR_ELEMENT_MAP: Record<string, NguHanh> = {
   "Bác sỹ": "thuy",
   "Long Đức": "thuy",
   "Thanh Long": "thuy",
+  "Thiếu Âm": "thuy",
 
   // Hanh Hoa
   "Thái Dương": "hoa",
@@ -314,42 +355,145 @@ const STAR_ELEMENT_MAP: Record<string, NguHanh> = {
 };
 
 const NGU_HANH_CLASS: Record<NguHanh, string> = {
-  hoa: "text-red-700",
+  hoa: "text-[#ff0000]",
   moc: "text-green-700",
-  kim: "text-zinc-500",
+  kim: "text-zinc-400",
   thuy: "text-black",
   tho: "text-amber-600",
 };
 
+const STAR_SHORT_NAME: Record<string, string> = {
+  "Quan Lộc": "Quan",
+  "Thiên Di": "Di",
+  "Phúc Đức": "Phúc",
+  "Phu Thê": "Thê",
+  "Tài Bạch": "Tài",
+};
+
+const MAIN_STAR_PAIR_ORDER: Array<[string, string]> = [
+  ["Tử Vi", "Thiên Phủ"],
+  ["Tử Vi", "Tham Lang"],
+  ["Tử Vi", "Thiên Tướng"],
+  ["Tử Vi", "Thất Sát"],
+  ["Tử Vi", "Phá Quân"],
+  ["Liêm Trinh", "Thiên Phủ"],
+  ["Vũ Khúc", "Thiên Phủ"],
+  ["Vũ Khúc", "Tham Lang"],
+  ["Thái Dương", "Cự Môn"],
+  ["Thái Dương", "Thiên Lương"],
+  ["Thái Dương", "Thái Âm"],
+  ["Thiên Cơ", "Thái Âm"],
+  ["Thiên Cơ", "Cự Môn"],
+  ["Thiên Cơ", "Thiên Lương"],
+  ["Vũ Khúc", "Thiên Tướng"],
+  ["Vũ Khúc", "Thất Sát"],
+  ["Vũ Khúc", "Phá Quân"],
+  ["Thiên Đồng", "Thiên Lương"],
+  ["Thiên Đồng", "Thái Âm"],
+  ["Thiên Đồng", "Cự Môn"],
+  ["Liêm Trinh", "Phá Quân"],
+  ["Liêm Trinh", "Tham Lang"],
+  ["Liêm Trinh", "Thiên Tướng"],
+  ["Liêm Trinh", "Thất Sát"],
+];
+
+const MAIN_STAR_PAIR_LOOKUP = new Map(
+  MAIN_STAR_PAIR_ORDER.map((pair) => [
+    pair
+      .slice()
+      .sort((a, b) => a.localeCompare(b))
+      .join("|"),
+    pair,
+  ]),
+);
+
 const CAT_TINH_PRIORITY: string[] = [
-  "Tả Phù", "Hữu Bật", "Văn Xương", "Văn Khúc", "Thiên Khôi", "Thiên Việt",
-  "Hóa Lộc", "Hóa Quyền", "Hóa Khoa",
-  "Thiên Đức", "Phúc Đức", "Long Đức", "Nguyệt Đức",
-  "Thiên Quan", "Thiên Phúc", "Thiên Quý", "Ân Quang",
-  "Giải Thần", "Thiên Giải", "Địa Giải",
-  "Lộc Tồn", "Thiên Lộc",
-  "Thai Phụ", "Phong Cáo", "Quốc Ấn", "Tam Thai", "Bát Tọa",
-  "Hồng Loan", "Thiên Hỷ", "Đào Hoa",
-  "Thiên Trù", "Thanh Long", "Phượng Các", "Long Trì", "Thiên Mã"
+  "Tả Phù",
+  "Hữu Bật",
+  "Văn Xương",
+  "Văn Khúc",
+  "Thiên Khôi",
+  "Thiên Việt",
+  "Hóa Lộc",
+  "Hóa Quyền",
+  "Hóa Khoa",
+  "Thiên Đức",
+  "Phúc Đức",
+  "Long Đức",
+  "Nguyệt Đức",
+  "Thiên Quan",
+  "Thiên Phúc",
+  "Thiên Quý",
+  "Ân Quang",
+  "Giải Thần",
+  "Thiên Giải",
+  "Địa Giải",
+  "Lộc Tồn",
+  "Thiên Lộc",
+  "Thai Phụ",
+  "Phong Cáo",
+  "Quốc Ấn",
+  "Tam Thai",
+  "Bát Tọa",
+  "Hồng Loan",
+  "Thiên Hỷ",
+  "Đào Hoa",
+  "Thiên Trù",
+  "Thanh Long",
+  "Phượng Các",
+  "Long Trì",
+  "Thiên Mã",
 ];
 
 const SAT_TINH_PRIORITY: string[] = [
-  "Kình Dương", "Đà La", "Hỏa Tinh", "Linh Tinh", "Địa Không", "Địa Kiếp",
+  "Kình Dương",
+  "Đà La",
+  "Hỏa Tinh",
+  "Linh Tinh",
+  "Địa Không",
+  "Địa Kiếp",
   "Hóa Kỵ",
-  "Thiên Hình", "Thiên Không", "Thiên Khốc", "Thiên Hư",
-  "Tang Môn", "Bạch Hổ", "Điếu Khách",
-  "Bệnh Phù", "Tử Phù",
-  "Cô Thần", "Quả Tú",
-  "Thiên La", "Địa Võng",
-  "Kiếp Sát", "Phá Toái",
-  "Đại Hao", "Tiểu Hao",
-  "Thiên Diêu", "Thiên Yêu", "Thiên Sát", "Thái Tuế", "Tướng Quân", "Tuế Phá", 
-  "Trực Phù", "Phi Liêm", "Lưu Hà", "Thiên Thương", "Quan Phù", "Phục Binh",
-  "Quan Phủ", "Thiên Sứ", "Đẩu Quân"
+  "Thiên Hình",
+  "Thiên Không",
+  "Thiên Khốc",
+  "Thiên Hư",
+  "Tang Môn",
+  "Bạch Hổ",
+  "Điếu Khách",
+  "Bệnh Phù",
+  "Tử Phù",
+  "Cô Thần",
+  "Quả Tú",
+  "Thiên La",
+  "Địa Võng",
+  "Kiếp Sát",
+  "Phá Toái",
+  "Đại Hao",
+  "Tiểu Hao",
+  "Thiên Diêu",
+  "Thiên Riêu",
+  "Thiên Yêu",
+  "Thiên Sát",
+  "Thái Tuế",
+  "Tướng Quân",
+  "Tuế Phá",
+  "Trực Phù",
+  "Phi Liêm",
+  "Lưu Hà",
+  "Thiên Thương",
+  "Quan Phù",
+  "Phục Binh",
+  "Quan Phủ",
+  "Thiên Sứ",
+  "Đẩu Quân",
 ];
 
-const CAT_TINH_RANK = new Map(CAT_TINH_PRIORITY.map((name, idx) => [name, idx]));
-const SAT_TINH_RANK = new Map(SAT_TINH_PRIORITY.map((name, idx) => [name, idx]));
+const CAT_TINH_RANK = new Map(
+  CAT_TINH_PRIORITY.map((name, idx) => [name, idx]),
+);
+const SAT_TINH_RANK = new Map(
+  SAT_TINH_PRIORITY.map((name, idx) => [name, idx]),
+);
 
 const STAR_ALIAS_MAP: Record<string, string> = {
   "Thiên Diêu": "Thiên Riêu",
@@ -377,6 +521,57 @@ function layNguHanhTheoSao(tenSao: string): NguHanh | undefined {
   return STAR_ELEMENT_MAP[saoChinh] ?? STAR_ELEMENT_MAP[saoChinh.toLowerCase()];
 }
 
+function laSaoLuu(rawName: string): boolean {
+  const ten = rawName.trim();
+  return /^L\.\s*/u.test(ten) || /^LN\s+/u.test(ten) || /^Lưu\s+/u.test(ten);
+}
+
+function taoMapTrangThaiSaoGoc(stars: StarInfo[]): Map<string, "M" | "V" | "B" | "Đ" | "H"> {
+  const map = new Map<string, "M" | "V" | "B" | "Đ" | "H">();
+
+  stars.forEach((star) => {
+    if (laSaoLuu(star.ten)) {
+      return;
+    }
+
+    const key = layTenSaoDePhanLoai(star.ten);
+    const { trangThai } = tachTenSaoVaTrangThai(star.ten);
+    if (key && trangThai && !map.has(key)) {
+      map.set(key, trangThai);
+    }
+  });
+
+  return map;
+}
+
+function timTenSaoGocTuSaoLuu(rawName: string): string {
+  const { tenSao } = tachTenSaoVaTrangThai(rawName);
+  const boTienToLuu = tenSao.replace(/^(?:L\.\s*|LN\s+|Lưu\s+)/u, "").trim();
+  const saoChinh = boTienToLuu.split(",")[0].trim();
+  return STAR_ALIAS_MAP[saoChinh] ?? saoChinh;
+}
+
+function renderTenSaoCoTrangThaiKeThua(
+  star: StarInfo,
+  trangThaiSaoGoc: Map<string, "M" | "V" | "B" | "Đ" | "H">,
+) {
+  const { tenSao, trangThai } = tachTenSaoVaTrangThai(star.ten);
+  const key = layTenSaoDePhanLoai(star.ten);
+  const keySaoGoc = laSaoLuu(star.ten) ? timTenSaoGocTuSaoLuu(star.ten) : undefined;
+  const trangThaiHienThi =
+    trangThai ??
+    (laSaoLuu(star.ten)
+      ? trangThaiSaoGoc.get(key) ?? (keySaoGoc ? trangThaiSaoGoc.get(keySaoGoc) : undefined)
+      : undefined);
+
+  return (
+    <>
+      {tenSao}
+      {trangThaiHienThi ? `(${trangThaiHienThi})` : ""}
+    </>
+  );
+}
+
 function tachNhieuSao(stars: StarInfo[]): StarInfo[] {
   return stars.flatMap((star) => {
     const danhSachSao = star.ten
@@ -396,7 +591,9 @@ function tachNhieuSao(stars: StarInfo[]): StarInfo[] {
 }
 
 function normalizeByIndex(data: TuViResponse) {
-  const byIndex: Array<(CungInfo & { ten_cung: string; core_model: Cung }) | undefined> = Array.from({ length: 12 }).map(() => undefined);
+  const byIndex: Array<
+    (CungInfo & { ten_cung: string; core_model: Cung }) | undefined
+  > = Array.from({ length: 12 }).map(() => undefined);
 
   Object.entries(data.cac_cung).forEach(([tenCung, value]) => {
     const canIdx = data.can_12_cung[String(value.vi_tri)]?.can_idx ?? 0;
@@ -407,7 +604,11 @@ function normalizeByIndex(data: TuViResponse) {
         name: tenCung,
         chi: value.vi_tri as Chi,
         can: canIdx as Can,
-        stars: (data.sao_theo_cung[String(value.vi_tri)] ?? value.cac_sao ?? []).map((item) => item.ten),
+        stars: (
+          data.sao_theo_cung[String(value.vi_tri)] ??
+          value.cac_sao ??
+          []
+        ).map((item) => item.ten),
       },
     };
   });
@@ -503,14 +704,19 @@ function taoDuLieuTieuVanTheoCung(data: TuViResponse): {
   };
 }
 
-function taoMapVanThangTheoCung(data: TuViResponse, tieuVanIdx: number): Record<number, number> {
+function taoMapVanThangTheoCung(
+  data: TuViResponse,
+  tieuVanIdx: number,
+): Record<number, number> {
   const map: Record<number, number> = {};
 
   // Thang 1: bat dau tai cung Tieu Van nam xem,
   // lui theo thang sinh am, sau do tien theo gio sinh (dia chi).
   const buocLuiThangSinh = Math.max(1, data.am_lich.thang_am) - 1;
   const buocTienGioSinh = doiGioDuongSangChiThuTu(data.gio_sinh) - 1;
-  const cungThangMot = chuanHoaIndex12(tieuVanIdx - buocLuiThangSinh + buocTienGioSinh);
+  const cungThangMot = chuanHoaIndex12(
+    tieuVanIdx - buocLuiThangSinh + buocTienGioSinh,
+  );
 
   for (let thang = 1; thang <= 12; thang += 1) {
     // Sau khi co cung Thang 1, cac thang con lai an thuan theo chieu kim dong ho.
@@ -533,7 +739,10 @@ function tachNgayThangNamDuong(ngayDuongLich: string) {
   };
 }
 
-function timViTriCungTheoTen(data: TuViResponse, tenCung: string): number | undefined {
+function timViTriCungTheoTen(
+  data: TuViResponse,
+  tenCung: string,
+): number | undefined {
   return data.cac_cung[tenCung]?.vi_tri;
 }
 
@@ -596,7 +805,9 @@ function taoChuoiPoints(points: [Point, Point, Point]): string {
   return points.map((p) => `${p.x},${p.y}`).join(" ");
 }
 
-function quyDoiSangKhungTrungTam(points: [Point, Point, Point]): [Point, Point, Point] {
+function quyDoiSangKhungTrungTam(
+  points: [Point, Point, Point],
+): [Point, Point, Point] {
   // O trung tam nam trong vung x:[25..75], y:[25..75] cua toan bo la so.
   return points.map((p) => ({
     x: (p.x - 25) * 2,
@@ -604,7 +815,9 @@ function quyDoiSangKhungTrungTam(points: [Point, Point, Point]): [Point, Point, 
   })) as [Point, Point, Point];
 }
 
-function parseCanChi(canChiText: string): { canIdx: number; chiIdx: number } | undefined {
+function parseCanChi(
+  canChiText: string,
+): { canIdx: number; chiIdx: number } | undefined {
   const parts = canChiText.trim().split(/\s+/u);
   if (parts.length < 2) {
     return undefined;
@@ -628,6 +841,38 @@ function layBanMenhTrungTam(data: TuViResponse): string {
 
 function laMenhThuan(amDuongMenh: string): boolean {
   return amDuongMenh.includes("Dương Nam") || amDuongMenh.includes("Âm Nữ");
+}
+
+function layClassNguHanhTheoDiaChi(diaChi: string): string {
+  const hanh = NGU_HANH_CAN_CHI[diaChi.trim()];
+  return hanh ? NGU_HANH_CLASS[hanh] : "text-[#8f6800]";
+}
+
+function sapXepChinhTinhTheoCap(stars: StarInfo[]): StarInfo[] {
+  if (stars.length !== 2) {
+    return stars;
+  }
+
+  const tenSao = stars.map((star) => tachTenSaoVaTrangThai(star.ten).tenSao);
+  const key = tenSao
+    .slice()
+    .sort((a, b) => a.localeCompare(b))
+    .join("|");
+  const pair = MAIN_STAR_PAIR_LOOKUP.get(key);
+  if (!pair) {
+    return stars;
+  }
+
+  const rank = new Map<string, number>([
+    [pair[0], 0],
+    [pair[1], 1],
+  ]);
+
+  return [...stars].sort((a, b) => {
+    const tenA = tachTenSaoVaTrangThai(a.ten).tenSao;
+    const tenB = tachTenSaoVaTrangThai(b.ten).tenSao;
+    return (rank.get(tenA) ?? 99) - (rank.get(tenB) ?? 99);
+  });
 }
 
 function vietTatCan(tenCan: string): string {
@@ -659,7 +904,10 @@ function taoMapDaiHanTheoCung(data: TuViResponse): Record<number, string> {
   return map;
 }
 
-function timCacCungCoSao(data: TuViResponse, tenSao: "Tuần" | "Triệt"): number[] {
+function timCacCungCoSao(
+  data: TuViResponse,
+  tenSao: "Tuần" | "Triệt",
+): number[] {
   const kq: number[] = [];
 
   Object.entries(data.sao_theo_cung).forEach(([idxText, stars]) => {
@@ -681,7 +929,10 @@ function timCacCungCoSao(data: TuViResponse, tenSao: "Tuần" | "Triệt"): numb
   return kq.sort((a, b) => a - b);
 }
 
-function tinhNhanKhongVongTheoCanh(data: TuViResponse, tenSao: "Tuần" | "Triệt"): KhongVongEdgeLabel | undefined {
+function tinhNhanKhongVongTheoCanh(
+  data: TuViResponse,
+  tenSao: "Tuần" | "Triệt",
+): KhongVongEdgeLabel | undefined {
   const dsCung = timCacCungCoSao(data, tenSao);
   if (dsCung.length < 2) {
     return undefined;
@@ -693,7 +944,8 @@ function tinhNhanKhongVongTheoCanh(data: TuViResponse, tenSao: "Tuần" | "Tri�
     return undefined;
   }
 
-  const laGoc = (cell: PalaceCell) => (cell.row === 1 || cell.row === 4) && (cell.col === 1 || cell.col === 4);
+  const laGoc = (cell: PalaceCell) =>
+    (cell.row === 1 || cell.row === 4) && (cell.col === 1 || cell.col === 4);
   const khongCoCungNaoOGoc = !laGoc(a) && !laGoc(b);
 
   // Hai cung chung cùng hàng -> cạnh dọc giữa 2 ô.
@@ -780,10 +1032,17 @@ function PalaceBox({
   isTieuVan: boolean;
 }) {
   const normalizedStars = React.useMemo(() => tachNhieuSao(stars), [stars]);
-  const mainStars = normalizedStars.filter((star) => star.loai === "chinh_tinh");
-  const trangSinhStars = normalizedStars.filter((star) => star.loai === "vong_trang_sinh");
+  const mainStars = normalizedStars.filter(
+    (star) => star.loai === "chinh_tinh",
+  );
+  const trangSinhStars = normalizedStars.filter(
+    (star) => star.loai === "vong_trang_sinh",
+  );
   const subStars = normalizedStars.filter(
-    (star) => star.loai !== "chinh_tinh" && star.loai !== "vong_trang_sinh" && star.loai !== "khong_vong"
+    (star) =>
+      star.loai !== "chinh_tinh" &&
+      star.loai !== "vong_trang_sinh" &&
+      star.loai !== "khong_vong",
   );
   const subStarsWithMeta = subStars.map((star, idx) => {
     const key = layTenSaoDePhanLoai(star.ten);
@@ -809,78 +1068,80 @@ function PalaceBox({
     .map((item) => item.star);
 
   const neutralStars = subStarsWithMeta
-    .filter((item) => !CAT_TINH_RANK.has(item.key) && !SAT_TINH_RANK.has(item.key))
+    .filter(
+      (item) => !CAT_TINH_RANK.has(item.key) && !SAT_TINH_RANK.has(item.key),
+    )
     .map((item) => item.star);
 
-  const leftColumnStars = [...catStars, ...neutralStars];
-  const rightColumnStars = satStars;
-  const mainStarsCoTuHoa = mainStars.filter((star) => Boolean(star.tu_hoa));
-  const mainStarsThuong = mainStars.filter((star) => !star.tu_hoa);
-  const mainStarsHienThi = [...mainStarsCoTuHoa, ...mainStarsThuong];
-  const palaceTitle = isMenh && isThan ? "MỆNH <THÂN>" : title.toUpperCase();
+  const leftColumnStarsBase = [...catStars, ...neutralStars];
+  const leftColumnStars = [
+    ...leftColumnStarsBase.filter((star) => !laSaoLuu(star.ten)),
+    ...leftColumnStarsBase.filter((star) => laSaoLuu(star.ten)),
+  ];
+  const rightColumnStars = [
+    ...satStars.filter((star) => !laSaoLuu(star.ten)),
+    ...satStars.filter((star) => laSaoLuu(star.ten)),
+  ];
+  const mainStarsHienThi = sapXepChinhTinhTheoCap(mainStars);
+  const trangThaiSaoGoc = React.useMemo(
+    () => taoMapTrangThaiSaoGoc(normalizedStars),
+    [normalizedStars],
+  );
+  const tenCungChoThan = isThan ? (STAR_SHORT_NAME[title] ?? title) : title;
+  const palaceTitle = isThan
+    ? `${tenCungChoThan.toUpperCase()} <THÂN>`
+    : title.toUpperCase();
+  const topLeftClass = layClassNguHanhTheoDiaChi(diaChi);
 
   return (
-    <div className="flex h-full flex-col border border-black bg-[#f5f4ee] px-2 py-3">
-      <div className="relative flex items-start text-[9px] leading-3">
-        <div className="font-bold text-[#8f6800]">{topLeft}</div>
-        <div className="ml-auto text-right text-[9px] font-bold text-[#0f4c81]">{topRight ?? ""}</div>
-        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-center text-[13px] leading-4 font-bold text-black">
-          {palaceTitle}
+    <div className="flex h-full flex-col border-[0.1px] border-zinc-950 bg-[#e8e7e2] px-1 py-3">
+      <div className="relative min-h-3 leading-3">
+        <div
+          className={cn(
+            "absolute left-0 top-0 text-[11px] font-bold",
+            topLeftClass,
+          )}
+        >
+          {topLeft}
+        </div>
+        <div className="absolute right-0 top-0 text-right text-[11px] font-bold text-[#0f4c81]">
+          {topRight ?? ""}
+        </div>
+        <div className="px-8 text-center text-[12px] leading-3 font-bold text-black white-space-nowrap">
+          <span className="inline-block max-w-full wrap-break-word">
+            {palaceTitle}
+          </span>
         </div>
       </div>
 
-      {isThan && !isMenh && (
-        <div className="mt-1 flex justify-center gap-1 text-[9px] font-semibold">
-          <span className="text-blue-700">&lt;THÂN&gt;</span>
-        </div>
-      )}
-
-      <div className="mt-1 min-h-10 text-center text-[13px] leading-4 font-bold text-black">
+      <div className="mt-1.5 min-h-10 text-center text-[14px] leading-4 font-bold text-black">
         {mainStarsHienThi.map((star) => (
           <div key={star.ten} className={starTextClass(star)}>
-            {(() => {
-              const { tenSao, trangThai } = tachTenSaoVaTrangThai(star.ten);
-              return (
-                <>
-                  {tenSao}
-                  {trangThai ? `(${trangThai})` : ""}
-                </>
-              );
-            })()}
+            {renderTenSaoCoTrangThaiKeThua(star, trangThaiSaoGoc)}
           </div>
         ))}
       </div>
 
-      <div className="mt-1 grow overflow-auto text-[11px] leading-3">
+      <div className="mt-0.5 grow overflow-auto text-[12px] leading-3.25">
         {subStars.length ? (
-          <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
-            <div className="space-y-0.5">
+          <div className="grid grid-cols-2 gap-x-0 gap-y-0">
+            <div className="space-y-0">
               {leftColumnStars.map((star, idx) => (
-                <div key={`cat-${star.ten}-${idx}`} className={starTextClass(star)}>
-                  {(() => {
-                    const { tenSao, trangThai } = tachTenSaoVaTrangThai(star.ten);
-                    return (
-                      <>
-                        {tenSao}
-                        {trangThai ? `(${trangThai})` : ""}
-                      </>
-                    );
-                  })()}
+                <div
+                  key={`cat-${star.ten}-${idx}`}
+                  className={starTextClass(star)}
+                >
+                  {renderTenSaoCoTrangThaiKeThua(star, trangThaiSaoGoc)}
                 </div>
               ))}
             </div>
-            <div className="space-y-0.5">
+            <div className="space-y-0">
               {rightColumnStars.map((star, idx) => (
-                <div key={`sat-${star.ten}-${idx}`} className={starTextClass(star)}>
-                  {(() => {
-                    const { tenSao, trangThai } = tachTenSaoVaTrangThai(star.ten);
-                    return (
-                      <>
-                        {tenSao}
-                        {trangThai ? `(${trangThai})` : ""}
-                      </>
-                    );
-                  })()}
+                <div
+                  key={`sat-${star.ten}-${idx}`}
+                  className={starTextClass(star)}
+                >
+                  {renderTenSaoCoTrangThaiKeThua(star, trangThaiSaoGoc)}
                 </div>
               ))}
             </div>
@@ -889,18 +1150,18 @@ function PalaceBox({
           <div className="text-zinc-400"> </div>
         )}
       </div>
-      <div className="mt-1 flex items-center justify-between text-[9px] font-semibold text-black">
+      <div className="mt-1 grid grid-cols-3 items-center text-[11px] font-semibold text-black">
         <span
           className={cn(
-            "text-[9px]",
+            "justify-self-start text-[11px]",
             isTieuVan
-              ? "rounded bg-black px-1 py-px font-bold text-white"
-              : "text-[#0f4c81]"
+              ? "rounded bg-[#FF0000] px-1 py-px font-bold text-white"
+              : "text-[#0f4c81]",
           )}
         >
           {bottomLeft ?? diaChi}
         </span>
-        <span className="text-center text-[12px] font-bold text-zinc-800">
+        <span className="justify-self-center text-center text-[11px] font-bold text-zinc-800">
           {trangSinhStars.length
             ? (() => {
                 const { tenSao } = tachTenSaoVaTrangThai(trangSinhStars[0].ten);
@@ -908,7 +1169,7 @@ function PalaceBox({
               })()
             : ""}
         </span>
-        <span>{bottomHint ?? ""}</span>
+        <span className="justify-self-end">{bottomHint ?? ""}</span>
       </div>
     </div>
   );
@@ -916,18 +1177,42 @@ function PalaceBox({
 
 export function TuViChart({ data }: { data: TuViResponse }) {
   const byIndex = React.useMemo(() => normalizeByIndex(data), [data]);
-  const ngayThangNamDuong = React.useMemo(() => tachNgayThangNamDuong(data.ngay_sinh_duong_lich), [data.ngay_sinh_duong_lich]);
+  const ngayThangNamDuong = React.useMemo(
+    () => tachNgayThangNamDuong(data.ngay_sinh_duong_lich),
+    [data.ngay_sinh_duong_lich],
+  );
   const tuoi =
     ngayThangNamDuong.nam > 0
       ? Math.max(0, data.nam_xem_han - ngayThangNamDuong.nam + 1)
       : undefined;
 
-  const quanLocIdx = React.useMemo(() => timViTriCungTheoTen(data, "Quan Lộc"), [data]);
-  const taiBachIdx = React.useMemo(() => timViTriCungTheoTen(data, "Tài Bạch"), [data]);
+  const quanLocIdx = React.useMemo(
+    () => timViTriCungTheoTen(data, "Quan Lộc"),
+    [data],
+  );
+  const taiBachIdx = React.useMemo(
+    () => timViTriCungTheoTen(data, "Tài Bạch"),
+    [data],
+  );
 
-  const diemMenh = React.useMemo(() => timDiemNeoCungTrenLayout(data.cung_menh_idx), [data.cung_menh_idx]);
-  const diemQuanLoc = React.useMemo(() => (quanLocIdx !== undefined ? timDiemNeoCungTrenLayout(quanLocIdx) : undefined), [quanLocIdx]);
-  const diemTaiBach = React.useMemo(() => (taiBachIdx !== undefined ? timDiemNeoCungTrenLayout(taiBachIdx) : undefined), [taiBachIdx]);
+  const diemMenh = React.useMemo(
+    () => timDiemNeoCungTrenLayout(data.cung_menh_idx),
+    [data.cung_menh_idx],
+  );
+  const diemQuanLoc = React.useMemo(
+    () =>
+      quanLocIdx !== undefined
+        ? timDiemNeoCungTrenLayout(quanLocIdx)
+        : undefined,
+    [quanLocIdx],
+  );
+  const diemTaiBach = React.useMemo(
+    () =>
+      taiBachIdx !== undefined
+        ? timDiemNeoCungTrenLayout(taiBachIdx)
+        : undefined,
+    [taiBachIdx],
+  );
 
   const tamGiacNeoDungCung = React.useMemo(() => {
     if (!diemMenh || !diemQuanLoc || !diemTaiBach) {
@@ -940,7 +1225,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
 
   const pointsTamGiac = React.useMemo(
     () => (tamGiacNeoDungCung ? taoChuoiPoints(tamGiacNeoDungCung) : ""),
-    [tamGiacNeoDungCung]
+    [tamGiacNeoDungCung],
   );
   const pointsTamGiacTrungTam = React.useMemo(() => {
     if (!tamGiacNeoDungCung) {
@@ -949,29 +1234,54 @@ export function TuViChart({ data }: { data: TuViResponse }) {
     return taoChuoiPoints(quyDoiSangKhungTrungTam(tamGiacNeoDungCung));
   }, [tamGiacNeoDungCung]);
 
-  const daiHanTheoCung = React.useMemo(() => taoMapDaiHanTheoCung(data), [data]);
-  const duLieuTieuVan = React.useMemo(() => taoDuLieuTieuVanTheoCung(data), [data]);
+  const daiHanTheoCung = React.useMemo(
+    () => taoMapDaiHanTheoCung(data),
+    [data],
+  );
+  const duLieuTieuVan = React.useMemo(
+    () => taoDuLieuTieuVanTheoCung(data),
+    [data],
+  );
   const { chiTieuVanTheoCung, tieuVanIdx } = duLieuTieuVan;
-  const vanThangTheoCung = React.useMemo(() => taoMapVanThangTheoCung(data, tieuVanIdx), [data, tieuVanIdx]);
-  const nhanTuan = React.useMemo(() => tinhNhanKhongVongTheoCanh(data, "Tuần"), [data]);
-  const nhanTriet = React.useMemo(() => tinhNhanKhongVongTheoCanh(data, "Triệt"), [data]);
-  const nhanKhongVong = [nhanTuan, nhanTriet].filter(Boolean) as KhongVongEdgeLabel[];
+  const vanThangTheoCung = React.useMemo(
+    () => taoMapVanThangTheoCung(data, tieuVanIdx),
+    [data, tieuVanIdx],
+  );
+  const nhanTuan = React.useMemo(
+    () => tinhNhanKhongVongTheoCanh(data, "Tuần"),
+    [data],
+  );
+  const nhanTriet = React.useMemo(
+    () => tinhNhanKhongVongTheoCanh(data, "Triệt"),
+    [data],
+  );
+  const nhanKhongVong = [nhanTuan, nhanTriet].filter(
+    Boolean,
+  ) as KhongVongEdgeLabel[];
   const banMenhTrungTam = React.useMemo(() => layBanMenhTrungTam(data), [data]);
 
   return (
-    <div className="border border-black bg-[#f5f4ee]">
-      <div className="relative grid aspect-4/5 grid-cols-4 grid-rows-4 border border-black">
+    <div className="w-full bg-[#000000]">
+      <div className="relative grid aspect-3/4 w-full grid-cols-4 grid-rows-4 border-[0.1px] border-zinc-950">
         {PALACE_LAYOUT.map((item) => {
           const palace = byIndex[item.idx];
-          const stars = data.sao_theo_cung[String(item.idx)] ?? palace?.cac_sao ?? [];
-          const canCung = palace?.thien_can ?? data.can_12_cung[String(item.idx)]?.can ?? "";
+          const stars =
+            data.sao_theo_cung[String(item.idx)] ?? palace?.cac_sao ?? [];
+          const canCung =
+            palace?.thien_can ?? data.can_12_cung[String(item.idx)]?.can ?? "";
           const chiCung = palace?.dia_chi ?? "";
           const topLeft = `${vietTatCan(canCung)}.${chiCung}`;
           const thangVan = vanThangTheoCung[item.idx];
-          const bottomRight = Number.isFinite(thangVan) ? `Tháng ${thangVan}` : "";
+          const bottomRight = Number.isFinite(thangVan)
+            ? `t.${thangVan}`
+            : "";
 
           return (
-            <div key={item.idx} className="relative z-10" style={{ gridColumnStart: item.col, gridRowStart: item.row }}>
+            <div
+              key={item.idx}
+              className="relative z-10"
+              style={{ gridColumnStart: item.col, gridRowStart: item.row }}
+            >
               <PalaceBox
                 title={palace?.ten_cung ?? `Cung ${item.idx}`}
                 diaChi={palace?.dia_chi ?? ""}
@@ -1015,97 +1325,179 @@ export function TuViChart({ data }: { data: TuViResponse }) {
           </div>
         ) : null}
 
-        <div className="relative z-40 col-start-2 row-start-2 row-span-2 col-span-2 border border-black bg-[#f5f4ee] px-14 py-4 flex h-full flex-col overflow-hidden">
+        <div className="relative z-40 col-start-2 row-start-2 col-span-2 row-span-2 flex h-full flex-col overflow-hidden border-[0.1px] border-zinc-950 bg-[#e7e8e2] px-2 py-2 sm:px-5 sm:py-3 lg:px-10 lg:py-4">
+          <div
+            className="m-auto h-[70%] item-center justify-item-center pointer-events-none absolute inset-0 z-0 bg-center bg-no-repeat bg-contain opacity-5"
+            style={{ backgroundImage: "url('/lasotuvi.png')" }}
+            aria-hidden="true"
+          />
+
           {tamGiacNeoDungCung ? (
-            <div className="pointer-events-none absolute inset-0 z-0">
-              <svg viewBox="0 0 100 100" className="h-full w-full" preserveAspectRatio="none" aria-hidden="true">
+            <div className="pointer-events-none absolute inset-0 z-10">
+              <svg
+                viewBox="0 0 100 100"
+                className="h-full w-full"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
                 <polygon
                   points={pointsTamGiacTrungTam}
                   fill="none"
                   stroke="#94a3b8"
-                  strokeWidth="0.6"
-                  strokeOpacity="0.38"
+                  strokeWidth="0.2"
+                  strokeOpacity="0.9"
                   strokeLinejoin="round"
-                  style={{ filter: "blur(0.5px)" }}
+                  style={{ filter: "blur(0.1px)" }}
                 />
               </svg>
             </div>
           ) : null}
 
           <div className="relative z-10 flex h-full flex-col">
-          <h3 className="text-center text-[18px] font-bold uppercase text-[#1e3a8a]">LÁ SỐ TỬ VI</h3>
+            <h3 className="mb-0 text-center text-[11px] font-bold text-[#ff0c0c] sm:text-[14px] lg:text-[18px]">
+              TỬ VI BÁT NHÃ
+            </h3>
+            <span className="text-center text-[9px] font-bold text-green-900 sm:text-[11px] lg:text-[13px]">https://tuvibatnha.vn</span>
+            {/* <h3 className = "text-center text-[14px] text-[#000000] mb-1 font-bold"></h3> */}
+            <div className="flex items-center">
+              <div className="grow border-b border-blue-700"></div>
+              <div className="grow border-b border-blue-700"></div>
+            </div>
 
-          <div className="flex-1 flex items-center">
-          <div className="mx-auto w-full max-w-130 space-y-1.5 text-[13px] leading-5 text-[#1e3a8a]">
-            <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
-              <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
-                <span className="font-semibold">Họ tên:</span>
-                <span>{data.ho_ten}</span>
+            <h3 className="mt-1.5 text-center text-[11px] font-bold text-[#0004ff] uppercase sm:mt-2 sm:text-[13px] lg:mt-3 lg:text-[17px]">
+              Lá Số Tử Vi
+            </h3>
+            <div className="mt-1.5 flex flex-1 items-center sm:mt-2 lg:mt-3">
+              <div className="mx-auto w-full max-w-240 space-y-0.5 text-[8px] leading-2.5 sm:space-y-1 sm:text-[10px] sm:leading-3 lg:text-[13px] lg:leading-4">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-1 sm:gap-x-3 lg:gap-x-6">
+                  <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                    <span className="font-semibold text-[#000000]">
+                      Họ tên:
+                    </span>
+                    <span className="text-[#0004ff]">
+                      {data.ho_ten}
+                    </span>
+                  </div>
+                  <span />
+                </div>
+
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-1 sm:gap-x-3 lg:gap-x-6">
+                  <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 tabular-nums sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                    <span className="font-semibold">Năm:</span>
+                    <span className="text-[#0004ff]">
+                      {ngayThangNamDuong.nam || "--"}
+                    </span>
+                  </div>
+                  <span className="w-10 justify-self-start whitespace-nowrap text-left text-[#0004ff] sm:w-12 lg:w-13">
+                    {data.can_chi.nam.can_chi}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-1 sm:gap-x-3 lg:gap-x-6">
+                  <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 tabular-nums sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                    <span className="font-semibold">Tháng:</span>
+                    <span className="text-[#0004ff]">
+                      {pad2(ngayThangNamDuong.thang)} (
+                      {pad2(data.am_lich.thang_am)})
+                    </span>
+                  </div>
+                  <span className="w-10 justify-self-start whitespace-nowrap text-left text-[#0004ff] sm:w-12 lg:w-13">
+                    {data.can_chi.thang.can_chi}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-1 sm:gap-x-3 lg:gap-x-6">
+                  <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 tabular-nums sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                    <span className="font-semibold">Ngày:</span>
+                    <span className="text-[#0004ff]">
+                      {pad2(ngayThangNamDuong.ngay)} (
+                      {pad2(data.am_lich.ngay_am)})
+                    </span>
+                  </div>
+                  <span className="w-10 justify-self-start whitespace-nowrap text-left text-[#0004ff] sm:w-12 lg:w-13">
+                    {data.can_chi.ngay.can_chi}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-1 sm:gap-x-3 lg:gap-x-6">
+                  <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 tabular-nums sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                    <span className="font-semibold">Giờ:</span>
+                    <span className="text-[#0004ff]">
+                      {pad2(data.gio_sinh)} giờ {pad2(data.phut_sinh)} phút
+                    </span>
+                  </div>
+                  <span className="w-10 justify-self-start whitespace-nowrap text-left text-[#0004ff] sm:w-12 lg:w-13">
+                    {data.can_chi.gio.can_chi}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-1 pt-1.5 sm:gap-x-3 sm:pt-2 lg:gap-x-6 lg:pt-3">
+                  <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 tabular-nums sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                    <span className="font-semibold">Năm xem:</span>
+                    <span className="text-[#0004ff]">
+                      {data.nam_xem_han}
+                    </span>
+                  </div>
+                  <span className="w-10 justify-self-start whitespace-nowrap text-left text-[#0004ff] sm:w-12 lg:w-13">
+                    {data.can_chi_nam_xem_han}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                  <span className="font-semibold">Tuổi:</span>
+                  <span className="text-[#0004ff]">
+                    {tuoi ?? "--"} tuổi
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 pt-1.5 sm:grid-cols-[44px_1fr] sm:gap-x-1.5 sm:pt-2 lg:grid-cols-[60px_1fr] lg:gap-x-2 lg:pt-3">
+                  <span className="font-semibold whitespace-nowrap">
+                    Âm Dương:
+                  </span>
+                  <span className="text-[#0004ff]">
+                    {data.am_duong_menh}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                  <span className="font-semibold">Mệnh:</span>
+                  <span className="text-[#0004ff]">
+                    {banMenhTrungTam}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                  <span className="font-semibold">Cục:</span>
+                  <span className="text-[#0004ff]">
+                    {data.cuc_menh.ten_cuc}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 pt-1.5 sm:grid-cols-[44px_1fr] sm:gap-x-3 sm:pt-2 lg:grid-cols-[60px_1fr] lg:gap-x-6 lg:pt-3">
+                  <span className="font-semibold"></span>
+                  <span className="text-[#0004ff]">
+                    {data.cuc_menh.ten_cuc}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 sm:grid-cols-[44px_1fr] sm:gap-x-3 lg:grid-cols-[60px_1fr] lg:gap-x-6">
+                  <span className="font-semibold"></span>
+                  <span className="text-[#0004ff]">
+                    {data.cuc_menh.ten_cuc}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 sm:grid-cols-[44px_1fr] sm:gap-x-3 lg:grid-cols-[60px_1fr] lg:gap-x-6">
+                  <span className="font-semibold"></span>
+                  <span className="text-[#0004ff]">
+                    {data.cuc_menh.ten_cuc}
+                  </span>
+                </div>
               </div>
-              <span />
             </div>
-
-            <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
-              <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
-                <span className="font-semibold">Năm:</span>
-                <span>{ngayThangNamDuong.nam || "--"} ({data.am_lich.nam_am})</span>
-              </div>
-              <span className="justify-self-end whitespace-nowrap">{data.can_chi.nam.can_chi}</span>
+            <div className="mt-auto pt-1 text-center text-[8px] font-bold text-[#ff0000] sm:pt-1.5 sm:text-[10px] lg:pt-2 lg:text-[12px]">
+              <span>Sđt và Zalo duy nhất: 0922.62.0000</span>
             </div>
-
-            <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
-              <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
-                <span className="font-semibold">Tháng:</span>
-                <span>{pad2(ngayThangNamDuong.thang)} ({pad2(data.am_lich.thang_am)})</span>
-              </div>
-              <span className="justify-self-end whitespace-nowrap">{data.can_chi.thang.can_chi}</span>
-            </div>
-
-            <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
-              <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
-                <span className="font-semibold">Ngày:</span>
-                <span>{pad2(ngayThangNamDuong.ngay)} ({pad2(data.am_lich.ngay_am)})</span>
-              </div>
-              <span className="justify-self-end whitespace-nowrap">{data.can_chi.ngay.can_chi}</span>
-            </div>
-
-            <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
-              <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
-                <span className="font-semibold">Giờ:</span>
-                <span>{pad2(data.gio_sinh)}:00</span>
-              </div>
-              <span className="justify-self-end whitespace-nowrap">{data.can_chi.gio.can_chi}</span>
-            </div>
-
-            <div className="grid grid-cols-[1fr_auto] items-center gap-x-6 pt-1">
-              <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
-                <span className="font-semibold">Năm xem:</span>
-                <span>{data.nam_xem_han}</span>
-              </div>
-              <span className="justify-self-end whitespace-nowrap">{data.can_chi_nam_xem_han}</span>
-            </div>
-
-            <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
-              <span className="font-semibold">Tuổi:</span>
-              <span>{tuoi ?? "--"}</span>
-            </div>
-
-            <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
-              <span className="font-semibold">Âm Dương:</span>
-              <span>{data.am_duong_menh}</span>
-            </div>
-
-            <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
-              <span className="font-semibold">Mệnh:</span>
-              <span>{banMenhTrungTam}</span>
-            </div>
-
-            <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
-              <span className="font-semibold">Cục:</span>
-              <span>{data.cuc_menh.ten_cuc}</span>
-            </div>
-          </div>
-          </div>
           </div>
         </div>
       </div>
