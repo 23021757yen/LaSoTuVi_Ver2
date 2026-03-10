@@ -23,7 +23,7 @@ const days = Array.from({ length: 31 }, (_, i) => i + 1);
 const hours = Array.from({ length: 24 }, (_, i) => i);
 const minutes = Array.from({ length: 60 }, (_, i) => i);
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_TUVI_API_BASE_URL ?? "http://localhost:8000";
+  process.env.NEXT_PUBLIC_TUVI_API_BASE_URL ?? "https://lasotuvi-be.onrender.com";
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
