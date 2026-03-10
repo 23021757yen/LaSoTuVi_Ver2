@@ -474,9 +474,6 @@ export default function Home() {
 
                       <div ref={chartExportRef} className="w-full overflow-x-auto bg-transparent pb-2">
                         <div className="min-w-190">
-                          <div className="h-9 bg-linear-to-r from-[#DA251D] to-[#F8F9FA] px-4 text-sm font-semibold leading-9 text-white">
-                            AN SAO TỬ VI - {laSoData.ho_ten.toUpperCase()}
-                          </div>
                           <div className="mt-3">
                             <TuViChart data={laSoData} />
                           </div>
