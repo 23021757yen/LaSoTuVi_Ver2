@@ -42,7 +42,7 @@ export function Header() {
             </span>
           </div>
 
-          <div className="ml-auto flex items-center gap-3 text-sm font-semibold">
+          <div className="hidden ml-auto flex items-center gap-3 text-sm font-semibold">
             <button className="px-2 py-1">Đăng nhập</button>
             <button className="rounded-md bg-[#fff] px-4 py-1 text-[#DA251D]">Đăng ký</button>
           </div>
@@ -50,50 +50,50 @@ export function Header() {
       </div>
 
       {/*CONTENT*/}
-<div className="w-full bg-white">
-  <div className="relative w-full h-[180px] md:h-[200px] overflow-hidden">
+      <div className="w-full bg-white">
+        <div className="relative w-full h-[180px] md:h-[200px] overflow-hidden">
 
-    {/* Bát quái background */}
-    <Image
-      src="/logo.png"
-      alt="bat quai"
-      width={500}
-      height={500}
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-30 opacity-10"
-    />
+          {/* Bát quái background */}
+          <Image
+            src="/logo.png"
+            alt="bat quai"
+            width={500}
+            height={500}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-30 opacity-10"
+          />
 
-    {/* Content đè lên */}
-    <div className="absolute inset-0 z-10 flex items-center justify-center gap-6 px-4">
+          {/* Content đè lên */}
+          <div className="w-full absolute inset-0 z-10 flex items-center justify-between gap-6 px-4">
+            <div className="flex items-center gap-6">
+              {/* Logo nhỏ */}
+              <Image
+                src="/lasotuvi.png"
+                alt="logo"
+                width={400}
+                height={400}
+                className=" w-28 md:w-32 lg:w-40 h-auto"
+              />
 
-      {/* Logo nhỏ */}
-      <Image
-        src="/lasotuvi.png"
-        alt="logo"
-        width={200}
-        height={200}
-        className=" w-28 md:w-32 lg:w-40 h-auto"
-      />
+              {/* Text */}
+              <div className="flex flex-col">
+                <div className="text-[#DA251D] font-bold text-2xl md:text-3xl translate-y-2">
+                  DIỄN ĐÀN
+                </div>
 
-      {/* Text */}
-      <div className="flex flex-col">
-        <div className="text-[#DA251D] font-bold text-2xl md:text-3xl translate-y-1">
-          DIỄN ĐÀN
-        </div>
+                <div className=" font-thuphap italic text-2xl md:text-5xl translate-y-6">
+                  TỬ VI BÁT NHÃ
+                </div>
 
-        <div className=" font-thuphap italic text-4xl md:text-5xl translate-y-2 font-bold">
-          TỬ VI BÁT NHÃ
-        </div>
-
-        <div className="text-red-500 text-sm md:text-base self-end translate-y-8">
-          http://www.tuvibatnha.vn
+                <div className="text-red-500 text-sm md:text-base self-end translate-y-9">
+                  http://www.tuvibatnha.vn
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-
-  </div>
-</div>
       {/* Main navbar */}
-      <div className="w-full bg-[#F2B3B0]">
+      <div className="w-full bg-[#F6cbcb]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2.5">
 
           <nav className="hidden w-full items-center justify-between  font-semibold text-zinc-700 md:flex">
