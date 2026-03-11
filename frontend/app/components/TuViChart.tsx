@@ -244,6 +244,13 @@ const PALACE_LAYOUT: PalaceCell[] = [
 
 type NguHanh = "hoa" | "moc" | "kim" | "thuy" | "tho";
 
+type TrangThaiSaoKey = "M" | "V" | "B" | "Đ" | "H";
+
+type TrangThaiSao = {
+  key: TrangThaiSaoKey;
+  label: "M" | "V" | "B" | "Đ" | "H";
+};
+
 const STAR_ELEMENT_MAP: Record<string, NguHanh> = {
   // Hanh Kim
   "Vũ Khúc": "kim",
@@ -303,7 +310,7 @@ const STAR_ELEMENT_MAP: Record<string, NguHanh> = {
   "Hỏa Tinh": "hoa",
   "Phi Liêm": "hoa",
   "Thái Tuế": "hoa",
-  "Hỷ Thần": "hoa",
+  "Hỉ Thần": "hoa",
   "Thiếu Dương": "hoa",
   "Thiên Không": "hoa",
   "Phá Toái": "hoa",
@@ -499,36 +506,115 @@ const SAT_TINH_RANK = new Map(
 const STAR_ALIAS_MAP: Record<string, string> = {
   "Thiên Diêu": "Thiên Riêu",
   "Thiên Y": "Thiên Yêu",
+  "Hỷ Thần": "Hỉ Thần",
+  "Địa Vọng": "Địa Võng",
 };
 
+const SAO_LUU_PREFIX_REGEX = /^(?:L\.\s*|LN\s+|Lưu\s+)/u;
+
+const SAT_TINH_TAIL_STARS = new Set(["Thiên La", "Địa Võng", "Thiên Sứ"]);
+
+const TRANG_THAI_SAO_LABEL: Record<TrangThaiSaoKey, TrangThaiSao["label"]> = {
+  M: "M",
+  V: "V",
+  B: "B",
+  Đ: "Đ",
+  H: "H",
+};
+
+const NGU_HANH_SINH: Record<NguHanh, NguHanh> = {
+  hoa: "tho",
+  tho: "kim",
+  kim: "thuy",
+  thuy: "moc",
+  moc: "hoa",
+};
+
+const NGU_HANH_KHAC: Record<NguHanh, NguHanh> = {
+  hoa: "kim",
+  kim: "moc",
+  moc: "tho",
+  tho: "thuy",
+  thuy: "hoa",
+};
+
+function boDauTiengViet(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/đ/gu, "d")
+    .replace(/Đ/gu, "D");
+}
+
+function chuanHoaTenSao(rawName: string): string {
+  return (STAR_ALIAS_MAP[rawName] ?? rawName)
+    .replace(/Hỷ Thần/gu, "Hỉ Thần")
+    .replace(/Địa Vọng/gu, "Địa Võng")
+    .trim();
+}
+
+function chuanHoaTrangThaiSao(rawStatus?: string): TrangThaiSao | undefined {
+  if (!rawStatus) {
+    return undefined;
+  }
+
+  const normalized = boDauTiengViet(rawStatus)
+    .toLowerCase()
+    .replace(/\./gu, "")
+    .trim();
+
+  let key: TrangThaiSaoKey | undefined;
+
+  if (["m", "mieu"].includes(normalized)) {
+    key = "M";
+  } else if (["v", "vuong"].includes(normalized)) {
+    key = "V";
+  } else if (["b", "binh"].includes(normalized)) {
+    key = "B";
+  } else if (["d", "dac"].includes(normalized)) {
+    key = "Đ";
+  } else if (["h", "ham"].includes(normalized)) {
+    key = "H";
+  }
+
+  return key
+    ? {
+        key,
+        label: TRANG_THAI_SAO_LABEL[key],
+      }
+    : undefined;
+}
+
 function tachTenSaoVaTrangThai(rawName: string) {
-  const match = rawName.trim().match(/^(.*?)(?:\s*\(([MVBĐH])\))?$/u);
+  const match = rawName.trim().match(/^(.*?)(?:\s*\(([^)]+)\))?$/u);
   return {
-    tenSao: (match?.[1] ?? rawName).trim(),
-    trangThai: match?.[2] as "M" | "V" | "B" | "Đ" | "H" | undefined,
+    tenSao: chuanHoaTenSao((match?.[1] ?? rawName).trim()),
+    trangThai: chuanHoaTrangThaiSao(match?.[2]),
   };
 }
 
 function layTenSaoDePhanLoai(rawName: string): string {
   const { tenSao } = tachTenSaoVaTrangThai(rawName);
-  const boLuu = tenSao.replace(/^L\.\s*/u, "").trim();
+  const boLuu = tenSao.replace(SAO_LUU_PREFIX_REGEX, "").trim();
   const saoChinh = boLuu.split(",")[0].trim();
   return STAR_ALIAS_MAP[saoChinh] ?? saoChinh;
 }
 
 function layNguHanhTheoSao(tenSao: string): NguHanh | undefined {
-  const boLuu = tenSao.replace(/^L\.\s*/u, "").trim();
+  const boLuu = tenSao.replace(SAO_LUU_PREFIX_REGEX, "").trim();
   const saoChinh = boLuu.split(",")[0].trim();
   return STAR_ELEMENT_MAP[saoChinh] ?? STAR_ELEMENT_MAP[saoChinh.toLowerCase()];
 }
 
 function laSaoLuu(rawName: string): boolean {
   const ten = rawName.trim();
-  return /^L\.\s*/u.test(ten) || /^LN\s+/u.test(ten) || /^Lưu\s+/u.test(ten);
+  return SAO_LUU_PREFIX_REGEX.test(ten);
 }
 
-function taoMapTrangThaiSaoGoc(stars: StarInfo[]): Map<string, "M" | "V" | "B" | "Đ" | "H"> {
-  const map = new Map<string, "M" | "V" | "B" | "Đ" | "H">();
+function taoMapTrangThaiSaoGoc(
+  stars: StarInfo[],
+): Map<string, TrangThaiSao> {
+  const map = new Map<string, TrangThaiSao>();
 
   stars.forEach((star) => {
     if (laSaoLuu(star.ten)) {
@@ -547,28 +633,31 @@ function taoMapTrangThaiSaoGoc(stars: StarInfo[]): Map<string, "M" | "V" | "B" |
 
 function timTenSaoGocTuSaoLuu(rawName: string): string {
   const { tenSao } = tachTenSaoVaTrangThai(rawName);
-  const boTienToLuu = tenSao.replace(/^(?:L\.\s*|LN\s+|Lưu\s+)/u, "").trim();
+  const boTienToLuu = tenSao.replace(SAO_LUU_PREFIX_REGEX, "").trim();
   const saoChinh = boTienToLuu.split(",")[0].trim();
   return STAR_ALIAS_MAP[saoChinh] ?? saoChinh;
 }
 
 function renderTenSaoCoTrangThaiKeThua(
   star: StarInfo,
-  trangThaiSaoGoc: Map<string, "M" | "V" | "B" | "Đ" | "H">,
+  trangThaiSaoGoc: Map<string, TrangThaiSao>,
 ) {
   const { tenSao, trangThai } = tachTenSaoVaTrangThai(star.ten);
   const key = layTenSaoDePhanLoai(star.ten);
-  const keySaoGoc = laSaoLuu(star.ten) ? timTenSaoGocTuSaoLuu(star.ten) : undefined;
+  const keySaoGoc = laSaoLuu(star.ten)
+    ? timTenSaoGocTuSaoLuu(star.ten)
+    : undefined;
   const trangThaiHienThi =
     trangThai ??
     (laSaoLuu(star.ten)
-      ? trangThaiSaoGoc.get(key) ?? (keySaoGoc ? trangThaiSaoGoc.get(keySaoGoc) : undefined)
+      ? (trangThaiSaoGoc.get(key) ??
+        (keySaoGoc ? trangThaiSaoGoc.get(keySaoGoc) : undefined))
       : undefined);
 
   return (
     <>
       {tenSao}
-      {trangThaiHienThi ? `(${trangThaiHienThi})` : ""}
+      {trangThaiHienThi ? `(${trangThaiHienThi.label})` : ""}
     </>
   );
 }
@@ -844,6 +933,78 @@ function laMenhThuan(amDuongMenh: string): boolean {
   return amDuongMenh.includes("Dương Nam") || amDuongMenh.includes("Âm Nữ");
 }
 
+function laCungDuong(cungIdx: number): boolean {
+  return chuanHoaIndex12(cungIdx) % 2 === 0;
+}
+
+function layNguHanhTuChuoi(text: string): NguHanh | undefined {
+  const normalized = boDauTiengViet(text).toLowerCase();
+
+  if (normalized.includes("kim")) {
+    return "kim";
+  }
+  if (normalized.includes("moc")) {
+    return "moc";
+  }
+  if (normalized.includes("thuy")) {
+    return "thuy";
+  }
+  if (normalized.includes("hoa")) {
+    return "hoa";
+  }
+  if (normalized.includes("tho")) {
+    return "tho";
+  }
+
+  return undefined;
+}
+
+function tinhAmDuongThuanNghichLy(data: TuViResponse): "Âm Dương Thuận Lý" | "Âm Dương Nghịch Lý" | "--" {
+  const canChiNam = parseCanChi(data.can_chi.nam.can_chi);
+  if (!canChiNam) {
+    return "--";
+  }
+
+  const tuoiDuong = canChiNam.canIdx % 2 === 0;
+  const menhThanCungDuong =
+    laCungDuong(data.cung_menh_idx) && laCungDuong(data.cung_than_idx);
+  const menhThanCungAm =
+    !laCungDuong(data.cung_menh_idx) && !laCungDuong(data.cung_than_idx);
+
+  if ((tuoiDuong && menhThanCungDuong) || (!tuoiDuong && menhThanCungAm)) {
+    return "Âm Dương Thuận Lý";
+  }
+
+  return "Âm Dương Nghịch Lý";
+}
+
+function tinhQuanHeCucMenh(data: TuViResponse): string {
+  const hanhCuc = layNguHanhTuChuoi(data.cuc_menh.ten_cuc ?? "");
+  const hanhMenh = layNguHanhTuChuoi(layBanMenhTrungTam(data));
+
+  if (!hanhCuc || !hanhMenh) {
+    return "--";
+  }
+
+  if (hanhCuc === hanhMenh) {
+    return "Cục Mệnh Bình Hòa";
+  }
+  if (NGU_HANH_SINH[hanhCuc] === hanhMenh) {
+    return "Cục Sinh Mệnh";
+  }
+  if (NGU_HANH_KHAC[hanhCuc] === hanhMenh) {
+    return "Cục Khắc Mệnh";
+  }
+  if (NGU_HANH_SINH[hanhMenh] === hanhCuc) {
+    return "Mệnh Sinh Cục";
+  }
+  if (NGU_HANH_KHAC[hanhMenh] === hanhCuc) {
+    return "Mệnh Khắc Cục";
+  }
+
+  return "--";
+}
+
 function layClassNguHanhTheoDiaChi(diaChi: string): string {
   const hanh = NGU_HANH_CAN_CHI[diaChi.trim()];
   return hanh ? NGU_HANH_CLASS[hanh] : "text-[#8f6800]";
@@ -1079,9 +1240,16 @@ function PalaceBox({
     ...leftColumnStarsBase.filter((star) => !laSaoLuu(star.ten)),
     ...leftColumnStarsBase.filter((star) => laSaoLuu(star.ten)),
   ];
+  const satStarsTail = satStars.filter((star) =>
+    SAT_TINH_TAIL_STARS.has(layTenSaoDePhanLoai(star.ten)),
+  );
+  const satStarsBase = satStars.filter(
+    (star) => !SAT_TINH_TAIL_STARS.has(layTenSaoDePhanLoai(star.ten)),
+  );
   const rightColumnStars = [
-    ...satStars.filter((star) => !laSaoLuu(star.ten)),
-    ...satStars.filter((star) => laSaoLuu(star.ten)),
+    ...satStarsBase.filter((star) => !laSaoLuu(star.ten)),
+    ...satStarsBase.filter((star) => laSaoLuu(star.ten)),
+    ...satStarsTail,
   ];
   const mainStarsHienThi = sapXepChinhTinhTheoCap(mainStars);
   const trangThaiSaoGoc = React.useMemo(
@@ -1162,7 +1330,7 @@ function PalaceBox({
         >
           {bottomLeft ?? diaChi}
         </span>
-        <span className="justify-self-center text-center text-[11px] font-bold text-zinc-800">
+        <span className="justify-self-center text-center text-[12px] font-bold text-zinc-800">
           {trangSinhStars.length
             ? (() => {
                 const { tenSao } = tachTenSaoVaTrangThai(trangSinhStars[0].ten);
@@ -1260,10 +1428,24 @@ export function TuViChart({ data }: { data: TuViResponse }) {
     Boolean,
   ) as KhongVongEdgeLabel[];
   const banMenhTrungTam = React.useMemo(() => layBanMenhTrungTam(data), [data]);
+  const amDuongThuanNghich = React.useMemo(
+    () => tinhAmDuongThuanNghichLy(data),
+    [data],
+  );
+  const quanHeCucMenh = React.useMemo(() => tinhQuanHeCucMenh(data), [data]);
+  const thanCu = React.useMemo(() => {
+    const cungThan = byIndex[data.cung_than_idx];
+    if (!cungThan) {
+      return "--";
+    }
+
+    const tenCung = STAR_SHORT_NAME[cungThan.ten_cung] ?? cungThan.ten_cung;
+    return `Thân Cư ${tenCung}`;
+  }, [byIndex, data.cung_than_idx]);
 
   return (
-    <div className="w-full bg-[#000000]">
-      <div className="relative grid aspect-3/4 w-full grid-cols-4 grid-rows-4 border-[0.1px] border-zinc-950">
+    <div className="bg-[#000000]">
+      <div className="relative grid aspect-3/4 grid-cols-4 grid-rows-4 border-[0.1px] border-zinc-950">
         {PALACE_LAYOUT.map((item) => {
           const palace = byIndex[item.idx];
           const stars =
@@ -1273,9 +1455,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
           const chiCung = palace?.dia_chi ?? "";
           const topLeft = `${vietTatCan(canCung)}.${chiCung}`;
           const thangVan = vanThangTheoCung[item.idx];
-          const bottomRight = Number.isFinite(thangVan)
-            ? `t.${thangVan}`
-            : "";
+          const bottomRight = Number.isFinite(thangVan) ? `tháng.${thangVan}` : "";
 
           return (
             <div
@@ -1326,7 +1506,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
           </div>
         ) : null}
 
-        <div className="relative z-40 col-start-2 row-start-2 col-span-2 row-span-2 flex h-full flex-col overflow-hidden border-[0.1px] border-zinc-950 bg-[#e7e8e2] px-10 py-4 sm:px-10 sm:py-4 lg:px-10 lg:py-4">
+        <div className="relative z-40 col-start-2 row-start-2 row-span-2 col-span-2 border-[0.1px] border-zinc-950 bg-[#e7e8e2] px-14 py-4 flex h-full flex-col overflow-hidden">
           <div
             className="m-auto h-[70%] item-center justify-item-center pointer-events-none absolute inset-0 z-0 bg-center bg-no-repeat bg-contain opacity-5"
             style={{ backgroundImage: "url('/lasotuvi.png')" }}
@@ -1355,148 +1535,142 @@ export function TuViChart({ data }: { data: TuViResponse }) {
           ) : null}
 
           <div className="relative z-10 flex h-full flex-col">
-            <h3 className="mb-0 text-center text-[18px] font-bold text-[#ff0c0c] sm:text-[18px] lg:text-[18px]">
+            <h3 className="text-center text-[18px] text-[#ff0c0c] mb-0 font-bold">
               TỬ VI BÁT NHÃ
             </h3>
-            <span className="text-center text-[13px] font-bold text-green-900 sm:text-[13px] lg:text-[13px]">https://tuvibatnha.vn</span>
+            <span className="text-[13px] text-center text-green-900 font-bold">
+              https://tuvibatnha.vn
+            </span>
             {/* <h3 className = "text-center text-[14px] text-[#000000] mb-1 font-bold"></h3> */}
             <div className="flex items-center">
               <div className="grow border-b border-blue-700"></div>
               <div className="grow border-b border-blue-700"></div>
             </div>
 
-            <h3 className="mt-3 text-center text-[17px] font-bold text-[#0004ff] uppercase sm:mt-3 sm:text-[17px] lg:mt-3 lg:text-[17px]">
+            <h3 className="text-center text-[17px] text-[#0004ff] mt-3 font-bold uppercase">
               Lá Số Tử Vi
             </h3>
-            <div className="mt-3 flex flex-1 items-center sm:mt-3 lg:mt-3">
-              <div className="mx-4 w-full max-w-240 space-y-1 text-[13px] leading-4 sm:space-y-1 sm:text-[13px] sm:leading-4 lg:text-[13px] lg:leading-4">
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:gap-x-3 lg:gap-x-3">
-                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                    <span className="font-semibold text-[#000000]">
+            <div className="mt-3 flex-1 flex items-center">
+              <div className="mx-3 w-full max-w-240 space-y-1.5 text-[14px] leading-4 ">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
+                    <span className="font-bold text-[#000000]">
                       Họ tên:
                     </span>
-                    <span className="text-[#0004ff]">
-                      {data.ho_ten}
-                    </span>
+                    <span className="text-[#0004ff]">{data.ho_ten}</span>
                   </div>
                   <span />
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:gap-x-3 lg:gap-x-3">
-                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                    <span className="font-semibold text-[#000000]">Năm:</span>
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
+                    <span className="font-bold">Năm:</span>
                     <span className="text-[#0004ff]">
                       {ngayThangNamDuong.nam || "--"}
                     </span>
                   </div>
-                  <span className="w-10 justify-self-start whitespace-nowrap text-left text-[#0004ff] sm:w-13 lg:w-13">
+                  <span className="w-14 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
                     {data.can_chi.nam.can_chi}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:gap-x-3 lg:gap-x-3">
-                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                    <span className="font-semibold text-[#000000]">Tháng:</span>
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
+                    <span className="font-bold">Tháng:</span>
                     <span className="text-[#0004ff]">
                       {pad2(ngayThangNamDuong.thang)} (
                       {pad2(data.am_lich.thang_am)})
                     </span>
                   </div>
-                  <span className="w-10 justify-self-start whitespace-nowrap text-left text-[#0004ff] sm:w-12 lg:w-13">
+                  <span className="w-14 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
                     {data.can_chi.thang.can_chi}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:gap-x-3 lg:gap-x-3">
-                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                    <span className="font-semibold text-[#000000]">Ngày:</span>
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
+                    <span className="font-bold">Ngày:</span>
                     <span className="text-[#0004ff]">
                       {pad2(ngayThangNamDuong.ngay)} (
                       {pad2(data.am_lich.ngay_am)})
                     </span>
                   </div>
-                  <span className="w-10 justify-self-start whitespace-nowrap text-left text-[#0004ff] sm:w-12 lg:w-13">
+                  <span className="w-14 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
                     {data.can_chi.ngay.can_chi}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:gap-x-3 lg:gap-x-3">
-                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                    <span className="font-semibold text-[#000000]">Giờ:</span>
-                    <span className="text-[#0004ff]">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
+                    <span className="font-bold">Giờ:</span>
+                    <span className="text-[#0004ff] whitespace-nowrap">
                       {pad2(data.gio_sinh)} giờ {pad2(data.phut_sinh)} phút
                     </span>
                   </div>
-                  <span className="w-10 justify-self-start whitespace-nowrap text-left text-[#0004ff] sm:w-12 lg:w-13">
+                  <span className="w-14 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
                     {data.can_chi.gio.can_chi}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:gap-x-3 lg:gap-x-3">
-                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                    <span className="font-semibold text-[#000000]">Năm xem:</span>
-                    <span className="text-[#0004ff]">
-                      {data.nam_xem_han}
-                    </span>
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-6 pt-3">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
+                    <span className="font-bold">Năm xem:</span>
+                    <span className="text-[#0004ff]">{data.nam_xem_han}</span>
                   </div>
-                  <span className="w-10 justify-self-start whitespace-nowrap text-left text-[#0004ff] sm:w-12 lg:w-13">
+                  <span className="w-14 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
                     {data.can_chi_nam_xem_han}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                  <span className="font-semibold text-[#000000]">Tuổi:</span>
-                  <span className="text-[#0004ff]">
-                    {tuoi ?? "--"} tuổi
-                  </span>
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
+                  <span className="font-bold">Tuổi:</span>
+                  <span className="text-[#0004ff]">{tuoi ?? "--"} tuổi</span>
                 </div>
 
-                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 pt-1.5 sm:grid-cols-[60px_1fr] sm:gap-x-6 sm:pt-2 lg:grid-cols-[60px_1fr] lg:gap-x-6 lg:pt-3">
-                  <span className="font-semibold text-[#000000]">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 pt-3">
+                  <span className="font-bold whitespace-nowrap">
                     Âm Dương:
                   </span>
-                  <span className="text-[#0004ff]">
-                    {data.am_duong_menh}
-                  </span>
+                  <span className="text-[#0004ff]">{data.am_duong_menh}</span>
                 </div>
 
-                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                  <span className="font-semibold text-[#000000]">Mệnh:</span>
-                  <span className="text-[#0004ff]">
-                    {banMenhTrungTam}
-                  </span>
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
+                  <span className="font-bold">Mệnh:</span>
+                  <span className="text-[#0004ff]">{banMenhTrungTam}</span>
                 </div>
 
-                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                  <span className="font-semibold text-[#000000]">Cục:</span>
-                  <span className="text-[#0004ff]">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
+                  <span className="font-bold">Cục:</span>
+                  <span className="text-[#0004ff] whitespace-nowrap">
                     {data.cuc_menh.ten_cuc}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 pt-1.5 sm:grid-cols-[60px_1fr] sm:gap-x-6 sm:pt-2 lg:grid-cols-[60px_1fr] lg:gap-x-6 lg:pt-3">
-                  <span className="font-semibold text-[#000000]"></span>
-                  <span className="text-[#0004ff]">
-                    {data.cuc_menh.ten_cuc}
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 pt-3 sm:grid-cols-[60px_1fr] sm:gap-x-6 sm:pt-3 lg:grid-cols-[60px_1fr] lg:gap-x-6 lg:pt-3">
+                  <span className="font-semibold text-[#000000] whitespace-nowrap">
+                  </span>
+                  <span className="text-[#0004ff] font-bold">
+                    {amDuongThuanNghich}
                   </span>
                 </div>
-
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                  <span className="font-semibold text-[#000000]"></span>
-                  <span className="text-[#0004ff]">
-                    {data.cuc_menh.ten_cuc}
+                  <span className="font-semibold text-[#000000] whitespace-nowrap">
+                  </span>
+                  <span className="text-[#0004ff] font-bold">
+                    {quanHeCucMenh}
                   </span>
                 </div>
-
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                  <span className="font-semibold text-[#000000]"></span>
-                  <span className="text-[#0004ff]">
-                    {data.cuc_menh.ten_cuc}
+                  <span className="font-semibold text-[#000000] whitespace-nowrap">
+                  </span>
+                  <span className="text-[#0004ff] font-bold">
+                    {thanCu}
                   </span>
                 </div>
               </div>
             </div>
-            <div className="mt-auto pt-1 text-center text-[12px] font-bold text-[#ff0000] sm:pt-1.5 sm:text-[12px] lg:pt-2 lg:text-[12px]">
+
+            <div className="mt-auto pt-2 text-center text-[12px] font-bold text-[#ff0000]">
               <span>Sđt và Zalo duy nhất: 0922.62.0000</span>
             </div>
           </div>
