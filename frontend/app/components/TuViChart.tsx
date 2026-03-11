@@ -986,7 +986,7 @@ function layNguHanhTuChuoi(text: string): NguHanh | undefined {
   return undefined;
 }
 
-function tinhAmDuongThuanNghichLy(data: TuViResponse): "Âm Dương Thuận Lý" | "Âm Dương Nghịch Lý" | "--" {
+function tinhAmDuongThuanNghichLy(data: TuViResponse): "Âm Dương thuận lý" | "Âm Dương nghịch lý" | "--" {
   const canChiNam = parseCanChi(data.can_chi.nam.can_chi);
   if (!canChiNam) {
     return "--";
@@ -999,10 +999,10 @@ function tinhAmDuongThuanNghichLy(data: TuViResponse): "Âm Dương Thuận Lý"
     !laCungDuong(data.cung_menh_idx) && !laCungDuong(data.cung_than_idx);
 
   if ((tuoiDuong && menhThanCungDuong) || (!tuoiDuong && menhThanCungAm)) {
-    return "Âm Dương Thuận Lý";
+    return "Âm Dương thuận lý";
   }
 
-  return "Âm Dương Nghịch Lý";
+  return "Âm Dương nghịch lý";
 }
 
 function tinhQuanHeCucMenh(data: TuViResponse): string {
@@ -1017,16 +1017,16 @@ function tinhQuanHeCucMenh(data: TuViResponse): string {
     return "Cục Mệnh Bình Hòa";
   }
   if (NGU_HANH_SINH[hanhCuc] === hanhMenh) {
-    return "Cục Sinh Mệnh";
+    return "Cục sinh Mệnh";
   }
   if (NGU_HANH_KHAC[hanhCuc] === hanhMenh) {
-    return "Cục Khắc Mệnh";
+    return "Cục khắc Mệnh";
   }
   if (NGU_HANH_SINH[hanhMenh] === hanhCuc) {
-    return "Mệnh Sinh Cục";
+    return "Mệnh sinh Cục";
   }
   if (NGU_HANH_KHAC[hanhMenh] === hanhCuc) {
-    return "Mệnh Khắc Cục";
+    return "Mệnh khắc Cục";
   }
 
   return "--";
@@ -1288,17 +1288,17 @@ function PalaceBox({
   const topLeftClass = layClassNguHanhTheoDiaChi(diaChi);
 
   return (
-    <div className="flex h-full flex-col border-[0.1px] border-zinc-950 bg-[#e8e7e2] px-1 py-3">
+    <div className="flex h-full flex-col border-[0.1px] border-zinc-950 bg-[#e8e7e2] px-1 pt-3 pb-2">
       <div className="relative min-h-3 leading-3">
         <div
           className={cn(
-            "absolute left-0 top-0 text-[11px] font-bold",
+            "absolute left-0 top-0 text-[12px] font-bold",
             topLeftClass,
           )}
         >
           {topLeft}
         </div>
-        <div className="absolute right-0 top-0 text-right text-[12px] font-bold text-[#0f4c81]">
+        <div className="absolute right-0 top-0 text-right text-[12px] font-bold text-[#000000]">
           {topRight ?? ""}
         </div>
         <div className="px-6 text-center text-[12px] leading-3 font-bold text-black whitespace-nowrap">
@@ -1344,18 +1344,18 @@ function PalaceBox({
           <div className="text-zinc-400"> </div>
         )}
       </div>
-      <div className="mt-1 grid grid-cols-3 items-center text-[11px] font-semibold text-black">
+      <div className="mt-3 -py-2 grid grid-cols-3 items-center text-[12px] font-semibold text-black">
         <span
           className={cn(
-            "justify-self-start text-[11px]",
+            "justify-self-start text-[12px]",
             isTieuVan
               ? "rounded bg-[#FF0000] px-1 py-px font-bold text-white"
-              : "text-[#0f4c81]",
+              : "text-[#000000]",
           )}
         >
           {bottomLeft ?? diaChi}
         </span>
-        <span className="justify-self-center text-center text-[12px] font-bold text-zinc-800 whitespace-nowrap">
+        <span className="justify-self-center text-center text-[13px] font-bold text-zinc-800 whitespace-nowrap">
           {trangSinhStars.length
             ? (() => {
                 const { tenSao } = tachTenSaoVaTrangThai(trangSinhStars[0].ten);
@@ -1363,7 +1363,7 @@ function PalaceBox({
               })()
             : ""}
         </span>
-        <span className="justify-self-end">{bottomHint ?? ""}</span>
+        <span className="justify-self-end text-[13px]">{bottomHint ?? ""}</span>
       </div>
     </div>
   );
@@ -1467,10 +1467,8 @@ export function TuViChart({ data }: { data: TuViResponse }) {
     if (!cungThan) {
       return "--";
     }
-
-    const tenCung = STAR_SHORT_NAME[cungThan.ten_cung] ?? cungThan.ten_cung;
-    return `Thân Cư ${tenCung}`;
-  }, [byIndex, data.cung_than_idx]);
+    return `Thân cư ${cungThan.ten_cung}`;
+}, [byIndex, data.cung_than_idx]);
 
   return (
     <div className="bg-[#000000]">
@@ -1484,7 +1482,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
           const chiCung = palace?.dia_chi ?? "";
           const topLeft = `${vietTatCan(canCung)}.${chiCung}`;
           const thangVan = vanThangTheoCung[item.idx];
-          const bottomRight = Number.isFinite(thangVan) ? `tháng.${thangVan}` : "";
+          const bottomRight = Number.isFinite(thangVan) ? `Th.${thangVan}` : "";
 
           return (
             <div
@@ -1577,17 +1575,17 @@ export function TuViChart({ data }: { data: TuViResponse }) {
               <div className="grow border-b border-blue-700"></div>
             </div>
 
-            <h3 className="text-center text-[17px] text-[#0004ff] mt-3 font-bold uppercase">
+            <h3 className="text-center text-[16px] text-[#0004ff] mt-3 font-bold uppercase">
               Lá Số Tử Vi
             </h3>
             <div className="mt-3 flex-1 flex items-center">
-              <div className="mx-auto w-full max-w-240 space-y-1 text-[14px] leading-4 ">
+              <div className="mx-auto w-full max-w-240 space-y-1 text-[13px] leading-4 ">
                 <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
                   <div className="grid grid-cols-[60px_1fr] items-center gap-x-3">
                     <span className="font-bold text-[#000000]">
                       Họ tên:
                     </span>
-                    <span className="text-[#0004ff]">{data.ho_ten}</span>
+                    <span className="text-[#0004ff] font-normal">{data.ho_ten}</span>
                   </div>
                   <span />
                 </div>
@@ -1595,11 +1593,11 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                 <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
                   <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                     <span className="font-bold">Năm:</span>
-                    <span className="text-[#0004ff]">
+                    <span className="text-[#0004ff]  font-normal">
                       {ngayThangNamDuong.nam || "--"}
                     </span>
                   </div>
-                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
+                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff] font-normal">
                     {data.can_chi.nam.can_chi}
                   </span>
                 </div>
@@ -1607,12 +1605,12 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                 <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
                   <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                     <span className="font-bold">Tháng:</span>
-                    <span className="text-[#0004ff]">
+                    <span className="text-[#0004ff] font-normal">
                       {pad2(ngayThangNamDuong.thang)} (
                       {pad2(data.am_lich.thang_am)})
                     </span>
                   </div>
-                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
+                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff] font-normal ">
                     {data.can_chi.thang.can_chi}
                   </span>
                 </div>
@@ -1620,12 +1618,12 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                 <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
                   <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                     <span className="font-bold">Ngày:</span>
-                    <span className="text-[#0004ff]">
+                    <span className="text-[#0004ff] font-normal">
                       {pad2(ngayThangNamDuong.ngay)} (
                       {pad2(data.am_lich.ngay_am)})
                     </span>
                   </div>
-                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
+                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff] font-normal">
                     {data.can_chi.ngay.can_chi}
                   </span>
                 </div>
@@ -1633,11 +1631,11 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                 <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
                   <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                     <span className="font-bold">Giờ:</span>
-                    <span className="text-[#0004ff] whitespace-nowrap">
+                    <span className="text-[#0004ff] whitespace-nowrap font-normal">
                       {pad2(data.gio_sinh)} giờ {pad2(data.phut_sinh)} phút
                     </span>
                   </div>
-                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
+                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff] font-normal">
                     {data.can_chi.gio.can_chi}
                   </span>
                 </div>
@@ -1645,33 +1643,33 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                 <div className="grid grid-cols-[1fr_auto] items-center gap-x-2 pt-3">
                   <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                     <span className="font-bold whitespace-nowrap">Năm xem:</span>
-                    <span className="text-[#0004ff]">{data.nam_xem_han}</span>
+                    <span className="text-[#0004ff] font-normal">{data.nam_xem_han}</span>
                   </div>
-                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
+                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff] font-normal">
                     {data.can_chi_nam_xem_han}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                   <span className="font-bold">Tuổi:</span>
-                  <span className="text-[#0004ff]">{tuoi ?? "--"} tuổi</span>
+                  <span className="text-[#0004ff] font-normal">{tuoi ?? "--"} tuổi</span>
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums pt-3">
                   <span className="font-bold whitespace-nowrap">
                     Âm Dương:
                   </span>
-                  <span className="text-[#0004ff]">{data.am_duong_menh}</span>
+                  <span className="text-[#0004ff] font-normal">{data.am_duong_menh}</span>
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-3">
                   <span className="font-bold">Mệnh:</span>
-                  <span className="text-[#0004ff]">{banMenhTrungTam}</span>
+                  <span className="text-[#0004ff] font-normal">{banMenhTrungTam}</span>
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-3">
                   <span className="font-bold">Cục:</span>
-                  <span className="text-[#0004ff] whitespace-nowrap">
+                  <span className="text-[#0004ff] whitespace-nowrap font-normal">
                     {data.cuc_menh.ten_cuc}
                   </span>
                 </div>
