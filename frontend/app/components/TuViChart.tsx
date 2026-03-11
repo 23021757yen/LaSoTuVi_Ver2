@@ -510,7 +510,7 @@ const STAR_ALIAS_MAP: Record<string, string> = {
   "Địa Vọng": "Địa Võng",
 };
 
-const SAO_LUU_PREFIX_REGEX = /^(?:L\.\s*|LN\s+|Lưu\s+)/u;
+const SAO_LUU_PREFIX_REGEX = /^(?:L\.\s*|L\s+|LN\.?\s+|Lưu\.?\s+)/u;
 
 const SAT_TINH_TAIL_STARS = new Set(["Thiên La", "Địa Võng", "Thiên Sứ"]);
 
@@ -623,6 +623,16 @@ function laSaoLuu(rawName: string): boolean {
   return SAO_LUU_PREFIX_REGEX.test(ten);
 }
 
+function chuanHoaHienThiTenSao(tenSao: string): string {
+  return tenSao.replace(SAO_LUU_PREFIX_REGEX, (prefix) => {
+    const normalized = boDauTiengViet(prefix).toLowerCase().trim();
+    if (normalized.startsWith("luu") || normalized.startsWith("ln")) {
+      return "Lưu ";
+    }
+    return "L.";
+  });
+}
+
 function taoMapTrangThaiSaoGoc(
   stars: StarInfo[],
 ): Map<string, TrangThaiSao> {
@@ -668,7 +678,7 @@ function renderTenSaoCoTrangThaiKeThua(
 
   return (
     <>
-      {tenSao}
+      {chuanHoaHienThiTenSao(tenSao)}
       {trangThaiHienThi ? `(${trangThaiHienThi.label})` : ""}
     </>
   );
@@ -1293,7 +1303,7 @@ function PalaceBox({
         </div>
       </div>
 
-      <div className="mt-1.5 min-h-10 text-center text-[14px] leading-4 font-bold text-black">
+      <div className="mt-1.5 min-h-10 text-center text-[15px] leading-4 font-bold text-black">
         {mainStarsHienThi.map((star) => (
           <div key={star.ten} className={starTextClass(star)}>
             {renderTenSaoCoTrangThaiKeThua(star, trangThaiSaoToanLaSo)}
@@ -1301,9 +1311,9 @@ function PalaceBox({
         ))}
       </div>
 
-      <div className="mt-0.5 grow overflow-auto text-[13px] leading-3.25">
+      <div className="mt-0.5 grow overflow-auto text-[12px] font-bold leading-3.25">
         {subStars.length ? (
-          <div className="grid grid-cols-2 gap-x-0 gap-y-0">
+          <div className="grid grid-cols-2 gap-x-0 gap-y-0 whitespace-nowrap">
             <div className="space-y-0">
               {leftColumnStars.map((star, idx) => (
                 <div
@@ -1439,7 +1449,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
   ) as KhongVongEdgeLabel[];
   const banMenhTrungTam = React.useMemo(() => layBanMenhTrungTam(data), [data]);
   const trangThaiSaoToanLaSo = React.useMemo(() => {
-    const allStars = Object.values(data.sao_theo_cung).flat();
+    const allStars = tachNhieuSao(Object.values(data.sao_theo_cung).flat());
     return taoMapTrangThaiSaoGoc(allStars);
   }, [data.sao_theo_cung]);
   const amDuongThuanNghich = React.useMemo(
