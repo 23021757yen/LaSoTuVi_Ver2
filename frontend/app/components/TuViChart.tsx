@@ -284,6 +284,7 @@ const STAR_ELEMENT_MAP: Record<string, NguHanh> = {
   "Long Đức": "thuy",
   "Thanh Long": "thuy",
   "Thiếu Âm": "thuy",
+  "Thiên Y": "thuy",
 
   // Hanh Hoa
   "Thái Dương": "hoa",
@@ -443,6 +444,7 @@ const CAT_TINH_PRIORITY: string[] = [
   "Phượng Các",
   "Long Trì",
   "Thiên Mã",
+  "Thiên Y",
 ];
 
 const SAT_TINH_PRIORITY: string[] = [
@@ -472,7 +474,6 @@ const SAT_TINH_PRIORITY: string[] = [
   "Tiểu Hao",
   "Thiên Diêu",
   "Thiên Riêu",
-  "Thiên Yêu",
   "Thiên Sát",
   "Thái Tuế",
   "Tướng Quân",
@@ -1325,7 +1326,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
           </div>
         ) : null}
 
-        <div className="relative z-40 col-start-2 row-start-2 col-span-2 row-span-2 flex h-full flex-col overflow-hidden border-[0.1px] border-zinc-950 bg-[#e7e8e2] px-2 py-2 sm:px-5 sm:py-3 lg:px-10 lg:py-4">
+        <div className="relative z-40 col-start-2 row-start-2 col-span-2 row-span-2 flex h-full flex-col overflow-hidden border-[0.1px] border-zinc-950 bg-[#e7e8e2] px-10 py-4 sm:px-10 sm:py-4 lg:px-10 lg:py-4">
           <div
             className="m-auto h-[70%] item-center justify-item-center pointer-events-none absolute inset-0 z-0 bg-center bg-no-repeat bg-contain opacity-5"
             style={{ backgroundImage: "url('/lasotuvi.png')" }}
@@ -1354,23 +1355,23 @@ export function TuViChart({ data }: { data: TuViResponse }) {
           ) : null}
 
           <div className="relative z-10 flex h-full flex-col">
-            <h3 className="mb-0 text-center text-[11px] font-bold text-[#ff0c0c] sm:text-[14px] lg:text-[18px]">
+            <h3 className="mb-0 text-center text-[18px] font-bold text-[#ff0c0c] sm:text-[18px] lg:text-[18px]">
               TỬ VI BÁT NHÃ
             </h3>
-            <span className="text-center text-[9px] font-bold text-green-900 sm:text-[11px] lg:text-[13px]">https://tuvibatnha.vn</span>
+            <span className="text-center text-[13px] font-bold text-green-900 sm:text-[13px] lg:text-[13px]">https://tuvibatnha.vn</span>
             {/* <h3 className = "text-center text-[14px] text-[#000000] mb-1 font-bold"></h3> */}
             <div className="flex items-center">
               <div className="grow border-b border-blue-700"></div>
               <div className="grow border-b border-blue-700"></div>
             </div>
 
-            <h3 className="mt-1.5 text-center text-[11px] font-bold text-[#0004ff] uppercase sm:mt-2 sm:text-[13px] lg:mt-3 lg:text-[17px]">
+            <h3 className="mt-3 text-center text-[17px] font-bold text-[#0004ff] uppercase sm:mt-3 sm:text-[17px] lg:mt-3 lg:text-[17px]">
               Lá Số Tử Vi
             </h3>
-            <div className="mt-1.5 flex flex-1 items-center sm:mt-2 lg:mt-3">
-              <div className="mx-auto w-full max-w-240 space-y-0.5 text-[8px] leading-2.5 sm:space-y-1 sm:text-[10px] sm:leading-3 lg:text-[13px] lg:leading-4">
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-1 sm:gap-x-3 lg:gap-x-6">
-                  <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+            <div className="mt-3 flex flex-1 items-center sm:mt-3 lg:mt-3">
+              <div className="mx-4 w-full max-w-240 space-y-1 text-[13px] leading-4 sm:space-y-1 sm:text-[13px] sm:leading-4 lg:text-[13px] lg:leading-4">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:gap-x-3 lg:gap-x-3">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
                     <span className="font-semibold text-[#000000]">
                       Họ tên:
                     </span>
@@ -1381,20 +1382,20 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                   <span />
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-1 sm:gap-x-3 lg:gap-x-6">
-                  <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 tabular-nums sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:gap-x-3 lg:gap-x-3">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
                     <span className="font-semibold">Năm:</span>
                     <span className="text-[#0004ff]">
                       {ngayThangNamDuong.nam || "--"}
                     </span>
                   </div>
-                  <span className="w-10 justify-self-start whitespace-nowrap text-left text-[#0004ff] sm:w-12 lg:w-13">
+                  <span className="w-10 justify-self-start whitespace-nowrap text-left text-[#0004ff] sm:w-13 lg:w-13">
                     {data.can_chi.nam.can_chi}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-1 sm:gap-x-3 lg:gap-x-6">
-                  <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 tabular-nums sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:gap-x-3 lg:gap-x-3">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
                     <span className="font-semibold">Tháng:</span>
                     <span className="text-[#0004ff]">
                       {pad2(ngayThangNamDuong.thang)} (
@@ -1406,8 +1407,8 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-1 sm:gap-x-3 lg:gap-x-6">
-                  <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 tabular-nums sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:gap-x-3 lg:gap-x-3">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
                     <span className="font-semibold">Ngày:</span>
                     <span className="text-[#0004ff]">
                       {pad2(ngayThangNamDuong.ngay)} (
@@ -1419,8 +1420,8 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-1 sm:gap-x-3 lg:gap-x-6">
-                  <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 tabular-nums sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:gap-x-3 lg:gap-x-3">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
                     <span className="font-semibold">Giờ:</span>
                     <span className="text-[#0004ff]">
                       {pad2(data.gio_sinh)} giờ {pad2(data.phut_sinh)} phút
@@ -1431,8 +1432,8 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-1 pt-1.5 sm:gap-x-3 sm:pt-2 lg:gap-x-6 lg:pt-3">
-                  <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 tabular-nums sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:gap-x-3 lg:gap-x-3">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
                     <span className="font-semibold">Năm xem:</span>
                     <span className="text-[#0004ff]">
                       {data.nam_xem_han}
@@ -1443,14 +1444,14 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
                   <span className="font-semibold">Tuổi:</span>
                   <span className="text-[#0004ff]">
                     {tuoi ?? "--"} tuổi
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 pt-1.5 sm:grid-cols-[44px_1fr] sm:gap-x-1.5 sm:pt-2 lg:grid-cols-[60px_1fr] lg:gap-x-2 lg:pt-3">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 pt-1.5 sm:grid-cols-[60px_1fr] sm:gap-x-6 sm:pt-2 lg:grid-cols-[60px_1fr] lg:gap-x-6 lg:pt-3">
                   <span className="font-semibold whitespace-nowrap">
                     Âm Dương:
                   </span>
@@ -1459,35 +1460,35 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
                   <span className="font-semibold">Mệnh:</span>
                   <span className="text-[#0004ff]">
                     {banMenhTrungTam}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 sm:grid-cols-[44px_1fr] sm:gap-x-1.5 lg:grid-cols-[60px_1fr] lg:gap-x-2">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
                   <span className="font-semibold">Cục:</span>
                   <span className="text-[#0004ff]">
                     {data.cuc_menh.ten_cuc}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 pt-1.5 sm:grid-cols-[44px_1fr] sm:gap-x-3 sm:pt-2 lg:grid-cols-[60px_1fr] lg:gap-x-6 lg:pt-3">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 pt-1.5 sm:grid-cols-[60px_1fr] sm:gap-x-6 sm:pt-2 lg:grid-cols-[60px_1fr] lg:gap-x-6 lg:pt-3">
                   <span className="font-semibold"></span>
                   <span className="text-[#0004ff]">
                     {data.cuc_menh.ten_cuc}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 sm:grid-cols-[44px_1fr] sm:gap-x-3 lg:grid-cols-[60px_1fr] lg:gap-x-6">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
                   <span className="font-semibold"></span>
                   <span className="text-[#0004ff]">
                     {data.cuc_menh.ten_cuc}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[32px_1fr] items-center gap-x-1 sm:grid-cols-[44px_1fr] sm:gap-x-3 lg:grid-cols-[60px_1fr] lg:gap-x-6">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
                   <span className="font-semibold"></span>
                   <span className="text-[#0004ff]">
                     {data.cuc_menh.ten_cuc}
@@ -1495,7 +1496,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                 </div>
               </div>
             </div>
-            <div className="mt-auto pt-1 text-center text-[8px] font-bold text-[#ff0000] sm:pt-1.5 sm:text-[10px] lg:pt-2 lg:text-[12px]">
+            <div className="mt-auto pt-1 text-center text-[12px] font-bold text-[#ff0000] sm:pt-1.5 sm:text-[12px] lg:pt-2 lg:text-[12px]">
               <span>Sđt và Zalo duy nhất: 0922.62.0000</span>
             </div>
           </div>
