@@ -586,10 +586,22 @@ function chuanHoaTrangThaiSao(rawStatus?: string): TrangThaiSao | undefined {
 }
 
 function tachTenSaoVaTrangThai(rawName: string) {
-  const match = rawName.trim().match(/^(.*?)(?:\s*\(([^)]+)\))?$/u);
+  const trimmed = rawName.trim();
+  const match = trimmed.match(/^(.*?)(?:\s*\(([^)]+)\))?$/u);
+  const tenSaoTrongNgoac = chuanHoaTenSao((match?.[1] ?? trimmed).trim());
+  const trangThaiTrongNgoac = chuanHoaTrangThaiSao(match?.[2]);
+
+  if (trangThaiTrongNgoac) {
+    return {
+      tenSao: tenSaoTrongNgoac,
+      trangThai: trangThaiTrongNgoac,
+    };
+  }
+
+  const matchSuffix = tenSaoTrongNgoac.match(/^(.*?)\s+(Miếu|Vượng|Bình|Đắc|Hãm|M|V|B|Đ|H)$/u);
   return {
-    tenSao: chuanHoaTenSao((match?.[1] ?? rawName).trim()),
-    trangThai: chuanHoaTrangThaiSao(match?.[2]),
+    tenSao: chuanHoaTenSao((matchSuffix?.[1] ?? tenSaoTrongNgoac).trim()),
+    trangThai: chuanHoaTrangThaiSao(matchSuffix?.[2]),
   };
 }
 
@@ -1181,6 +1193,7 @@ function PalaceBox({
   isMenh,
   isThan,
   isTieuVan,
+  trangThaiSaoToanLaSo,
 }: {
   topLeft: string;
   topRight?: string;
@@ -1192,6 +1205,7 @@ function PalaceBox({
   isMenh: boolean;
   isThan: boolean;
   isTieuVan: boolean;
+  trangThaiSaoToanLaSo: Map<string, TrangThaiSao>;
 }) {
   const normalizedStars = React.useMemo(() => tachNhieuSao(stars), [stars]);
   const mainStars = normalizedStars.filter(
@@ -1252,10 +1266,6 @@ function PalaceBox({
     ...satStarsTail,
   ];
   const mainStarsHienThi = sapXepChinhTinhTheoCap(mainStars);
-  const trangThaiSaoGoc = React.useMemo(
-    () => taoMapTrangThaiSaoGoc(normalizedStars),
-    [normalizedStars],
-  );
   const tenCungChoThan = isThan ? (STAR_SHORT_NAME[title] ?? title) : title;
   const palaceTitle = isThan
     ? `${tenCungChoThan.toUpperCase()} <THÂN>`
@@ -1273,11 +1283,11 @@ function PalaceBox({
         >
           {topLeft}
         </div>
-        <div className="absolute right-0 top-0 text-right text-[11px] font-bold text-[#0f4c81]">
+        <div className="absolute right-0 top-0 text-right text-[12px] font-bold text-[#0f4c81]">
           {topRight ?? ""}
         </div>
-        <div className="px-8 text-center text-[12px] leading-3 font-bold text-black white-space-nowrap">
-          <span className="inline-block max-w-full wrap-break-word">
+        <div className="px-6 text-center text-[14px] leading-3 font-bold text-black whitespace-nowrap">
+          <span className="inline-block max-w-full whitespace-nowrap">
             {palaceTitle}
           </span>
         </div>
@@ -1286,12 +1296,12 @@ function PalaceBox({
       <div className="mt-1.5 min-h-10 text-center text-[14px] leading-4 font-bold text-black">
         {mainStarsHienThi.map((star) => (
           <div key={star.ten} className={starTextClass(star)}>
-            {renderTenSaoCoTrangThaiKeThua(star, trangThaiSaoGoc)}
+            {renderTenSaoCoTrangThaiKeThua(star, trangThaiSaoToanLaSo)}
           </div>
         ))}
       </div>
 
-      <div className="mt-0.5 grow overflow-auto text-[12px] leading-3.25">
+      <div className="mt-0.5 grow overflow-auto text-[13px] leading-3.25">
         {subStars.length ? (
           <div className="grid grid-cols-2 gap-x-0 gap-y-0">
             <div className="space-y-0">
@@ -1300,7 +1310,7 @@ function PalaceBox({
                   key={`cat-${star.ten}-${idx}`}
                   className={starTextClass(star)}
                 >
-                  {renderTenSaoCoTrangThaiKeThua(star, trangThaiSaoGoc)}
+                  {renderTenSaoCoTrangThaiKeThua(star, trangThaiSaoToanLaSo)}
                 </div>
               ))}
             </div>
@@ -1310,7 +1320,7 @@ function PalaceBox({
                   key={`sat-${star.ten}-${idx}`}
                   className={starTextClass(star)}
                 >
-                  {renderTenSaoCoTrangThaiKeThua(star, trangThaiSaoGoc)}
+                  {renderTenSaoCoTrangThaiKeThua(star, trangThaiSaoToanLaSo)}
                 </div>
               ))}
             </div>
@@ -1428,6 +1438,10 @@ export function TuViChart({ data }: { data: TuViResponse }) {
     Boolean,
   ) as KhongVongEdgeLabel[];
   const banMenhTrungTam = React.useMemo(() => layBanMenhTrungTam(data), [data]);
+  const trangThaiSaoToanLaSo = React.useMemo(() => {
+    const allStars = Object.values(data.sao_theo_cung).flat();
+    return taoMapTrangThaiSaoGoc(allStars);
+  }, [data.sao_theo_cung]);
   const amDuongThuanNghich = React.useMemo(
     () => tinhAmDuongThuanNghichLy(data),
     [data],
@@ -1474,6 +1488,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                 isMenh={item.idx === data.cung_menh_idx}
                 isThan={item.idx === data.cung_than_idx}
                 isTieuVan={item.idx === tieuVanIdx}
+                trangThaiSaoToanLaSo={trangThaiSaoToanLaSo}
               />
             </div>
           );
