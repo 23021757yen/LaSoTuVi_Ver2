@@ -510,7 +510,7 @@ const STAR_ALIAS_MAP: Record<string, string> = {
   "Địa Vọng": "Địa Võng",
 };
 
-const SAO_LUU_PREFIX_REGEX = /^(?:L\.\s*|LN\s+|Lưu\s+)/u;
+const SAO_LUU_PREFIX_REGEX = /^(?:L\.\s*|L\s+|LN\.?\s+|Lưu\.?\s+)/u;
 
 const SAT_TINH_TAIL_STARS = new Set(["Thiên La", "Địa Võng", "Thiên Sứ"]);
 
@@ -623,6 +623,16 @@ function laSaoLuu(rawName: string): boolean {
   return SAO_LUU_PREFIX_REGEX.test(ten);
 }
 
+function chuanHoaHienThiTenSao(tenSao: string): string {
+  return tenSao.replace(SAO_LUU_PREFIX_REGEX, (prefix) => {
+    const normalized = boDauTiengViet(prefix).toLowerCase().trim();
+    if (normalized.startsWith("luu") || normalized.startsWith("ln")) {
+      return "Lưu ";
+    }
+    return "L.";
+  });
+}
+
 function taoMapTrangThaiSaoGoc(
   stars: StarInfo[],
 ): Map<string, TrangThaiSao> {
@@ -654,21 +664,24 @@ function renderTenSaoCoTrangThaiKeThua(
   star: StarInfo,
   trangThaiSaoGoc: Map<string, TrangThaiSao>,
 ) {
+  const isSaoLuu = laSaoLuu(star.ten);
   const { tenSao, trangThai } = tachTenSaoVaTrangThai(star.ten);
   const key = layTenSaoDePhanLoai(star.ten);
-  const keySaoGoc = laSaoLuu(star.ten)
-    ? timTenSaoGocTuSaoLuu(star.ten)
-    : undefined;
-  const trangThaiHienThi =
+  const keySaoGoc = isSaoLuu ? timTenSaoGocTuSaoLuu(star.ten) : undefined;
+  const trangThaiKeThua =
     trangThai ??
-    (laSaoLuu(star.ten)
+    (isSaoLuu
       ? (trangThaiSaoGoc.get(key) ??
         (keySaoGoc ? trangThaiSaoGoc.get(keySaoGoc) : undefined))
       : undefined);
+  const trangThaiHienThi =
+    isSaoLuu && trangThaiKeThua && ["H", "Đ"].includes(trangThaiKeThua.key)
+      ? undefined
+      : trangThaiKeThua;
 
   return (
     <>
-      {tenSao}
+      {chuanHoaHienThiTenSao(tenSao)}
       {trangThaiHienThi ? `(${trangThaiHienThi.label})` : ""}
     </>
   );
@@ -1286,7 +1299,7 @@ function PalaceBox({
         <div className="absolute right-0 top-0 text-right text-[12px] font-bold text-[#0f4c81]">
           {topRight ?? ""}
         </div>
-        <div className="px-6 text-center text-[14px] leading-3 font-bold text-black whitespace-nowrap">
+        <div className="px-6 text-center text-[13px] leading-3 font-bold text-black whitespace-nowrap">
           <span className="inline-block max-w-full whitespace-nowrap">
             {palaceTitle}
           </span>
@@ -1301,9 +1314,9 @@ function PalaceBox({
         ))}
       </div>
 
-      <div className="mt-0.5 grow overflow-auto text-[13px] leading-3.25">
+      <div className="mt-0.5 grow overflow-auto text-[12px] leading-3.25">
         {subStars.length ? (
-          <div className="grid grid-cols-2 gap-x-0 gap-y-0">
+          <div className="grid grid-cols-2 gap-x-0 gap-y-0 whitespace-nowrap">
             <div className="space-y-0">
               {leftColumnStars.map((star, idx) => (
                 <div
@@ -1340,7 +1353,7 @@ function PalaceBox({
         >
           {bottomLeft ?? diaChi}
         </span>
-        <span className="justify-self-center text-center text-[12px] font-bold text-zinc-800">
+        <span className="justify-self-center text-center text-[12px] font-bold text-zinc-800 whitespace-nowrap">
           {trangSinhStars.length
             ? (() => {
                 const { tenSao } = tachTenSaoVaTrangThai(trangSinhStars[0].ten);
@@ -1439,7 +1452,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
   ) as KhongVongEdgeLabel[];
   const banMenhTrungTam = React.useMemo(() => layBanMenhTrungTam(data), [data]);
   const trangThaiSaoToanLaSo = React.useMemo(() => {
-    const allStars = Object.values(data.sao_theo_cung).flat();
+    const allStars = tachNhieuSao(Object.values(data.sao_theo_cung).flat());
     return taoMapTrangThaiSaoGoc(allStars);
   }, [data.sao_theo_cung]);
   const amDuongThuanNghich = React.useMemo(
@@ -1566,9 +1579,9 @@ export function TuViChart({ data }: { data: TuViResponse }) {
               Lá Số Tử Vi
             </h3>
             <div className="mt-3 flex-1 flex items-center">
-              <div className="mx-3 w-full max-w-240 space-y-1.5 text-[14px] leading-4 ">
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
-                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
+              <div className="mx-auto w-full max-w-240 space-y-1 text-[14px] leading-4 ">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-3">
                     <span className="font-bold text-[#000000]">
                       Họ tên:
                     </span>
@@ -1577,105 +1590,105 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                   <span />
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
-                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                     <span className="font-bold">Năm:</span>
                     <span className="text-[#0004ff]">
                       {ngayThangNamDuong.nam || "--"}
                     </span>
                   </div>
-                  <span className="w-14 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
+                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
                     {data.can_chi.nam.can_chi}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
-                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                     <span className="font-bold">Tháng:</span>
                     <span className="text-[#0004ff]">
                       {pad2(ngayThangNamDuong.thang)} (
                       {pad2(data.am_lich.thang_am)})
                     </span>
                   </div>
-                  <span className="w-14 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
+                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
                     {data.can_chi.thang.can_chi}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
-                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                     <span className="font-bold">Ngày:</span>
                     <span className="text-[#0004ff]">
                       {pad2(ngayThangNamDuong.ngay)} (
                       {pad2(data.am_lich.ngay_am)})
                     </span>
                   </div>
-                  <span className="w-14 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
+                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
                     {data.can_chi.ngay.can_chi}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-6">
-                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                     <span className="font-bold">Giờ:</span>
                     <span className="text-[#0004ff] whitespace-nowrap">
                       {pad2(data.gio_sinh)} giờ {pad2(data.phut_sinh)} phút
                     </span>
                   </div>
-                  <span className="w-14 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
+                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
                     {data.can_chi.gio.can_chi}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] items-center gap-x-6 pt-3">
-                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 tabular-nums">
-                    <span className="font-bold">Năm xem:</span>
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-2 pt-3">
+                  <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
+                    <span className="font-bold whitespace-nowrap">Năm xem:</span>
                     <span className="text-[#0004ff]">{data.nam_xem_han}</span>
                   </div>
-                  <span className="w-14 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
+                  <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff]">
                     {data.can_chi_nam_xem_han}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                   <span className="font-bold">Tuổi:</span>
                   <span className="text-[#0004ff]">{tuoi ?? "--"} tuổi</span>
                 </div>
 
-                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 pt-3">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums pt-3">
                   <span className="font-bold whitespace-nowrap">
                     Âm Dương:
                   </span>
                   <span className="text-[#0004ff]">{data.am_duong_menh}</span>
                 </div>
 
-                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-3">
                   <span className="font-bold">Mệnh:</span>
                   <span className="text-[#0004ff]">{banMenhTrungTam}</span>
                 </div>
 
-                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6">
+                <div className="grid grid-cols-[60px_1fr] items-center gap-x-3">
                   <span className="font-bold">Cục:</span>
                   <span className="text-[#0004ff] whitespace-nowrap">
                     {data.cuc_menh.ten_cuc}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 pt-3 sm:grid-cols-[60px_1fr] sm:gap-x-6 sm:pt-3 lg:grid-cols-[60px_1fr] lg:gap-x-6 lg:pt-3">
+                <div className=" text-[13px] grid grid-cols-[60px_1fr] items-center gap-x-2 pt-3 sm:grid-cols-[60px_1fr] sm:gap-x-2 sm:pt-3 lg:grid-cols-[60px_1fr] lg:gap-x-2 lg:pt-3">
                   <span className="font-semibold text-[#000000] whitespace-nowrap">
                   </span>
                   <span className="text-[#0004ff] font-bold">
                     {amDuongThuanNghich}
                   </span>
                 </div>
-                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
+                <div className="text-[13px] grid grid-cols-[60px_1fr] items-center gap-x-2 sm:grid-cols-[60px_1fr] sm:gap-x-2 lg:grid-cols-[60px_1fr] lg:gap-x-2">
                   <span className="font-semibold text-[#000000] whitespace-nowrap">
                   </span>
                   <span className="text-[#0004ff] font-bold">
                     {quanHeCucMenh}
                   </span>
                 </div>
-                <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
+                <div className="text-[13px] grid grid-cols-[60px_1fr] items-center gap-x-2 sm:grid-cols-[60px_1fr] sm:gap-x-2 lg:grid-cols-[60px_1fr] lg:gap-x-2">
                   <span className="font-semibold text-[#000000] whitespace-nowrap">
                   </span>
                   <span className="text-[#0004ff] font-bold">

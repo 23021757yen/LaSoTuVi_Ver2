@@ -473,7 +473,7 @@ export default function Home() {
                       </div>
 
                       <div ref={chartExportRef} className="w-full overflow-x-auto bg-transparent pb-2">
-                        <div className="min-w-190">
+                        <div className="min-w-170">
                           <div className="mt-3">
                             <TuViChart data={laSoData} />
                           </div>
