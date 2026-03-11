@@ -1445,14 +1445,14 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                  <span className="font-semibold">Tuổi:</span>
+                  <span className="font-semibold text-[#000000]">Tuổi:</span>
                   <span className="text-[#0004ff]">
                     {tuoi ?? "--"} tuổi
                   </span>
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 pt-1.5 sm:grid-cols-[60px_1fr] sm:gap-x-6 sm:pt-2 lg:grid-cols-[60px_1fr] lg:gap-x-6 lg:pt-3">
-                  <span className="font-semibold whitespace-nowrap">
+                  <span className="font-semibold text-[#000000]">
                     Âm Dương:
                   </span>
                   <span className="text-[#0004ff]">
@@ -1461,7 +1461,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-6 sm:grid-cols-[60px_1fr] sm:gap-x-6 lg:grid-cols-[60px_1fr] lg:gap-x-6">
-                  <span className="font-semibold">Mệnh:</span>
+                  <span className="font-semibold text-[#000000]">Mệnh:</span>
                   <span className="text-[#0004ff]">
                     {banMenhTrungTam}
                   </span>
