@@ -504,13 +504,15 @@ const SAT_TINH_RANK = new Map(
 );
 
 const STAR_ALIAS_MAP: Record<string, string> = {
-  "Thiên Diêu": "Thiên Riêu",
-  "Thiên Y": "Thiên Yêu",
+  "Thiên Riêu": "Thiên Diêu",
+  "Thiên Yêu": "Thiên Y",
   "Hỷ Thần": "Hỉ Thần",
   "Địa Vọng": "Địa Võng",
+  "Đế": "Đế Vượng",
+  "Tràng Sinh": "Trường Sinh",
 };
 
-const SAO_LUU_PREFIX_REGEX = /^(?:L\.\s*|L\s+|LN\.?\s+|Lưu\.?\s+)/u;
+const SAO_LUU_PREFIX_REGEX = /^(?:L\.\s*|L\s+|\.?\s+|\.?\s+)/u;
 
 const SAT_TINH_TAIL_STARS = new Set(["Thiên La", "Địa Võng", "Thiên Sứ"]);
 
@@ -1275,8 +1277,8 @@ function PalaceBox({
   );
   const rightColumnStars = [
     ...satStarsBase.filter((star) => !laSaoLuu(star.ten)),
-    ...satStarsBase.filter((star) => laSaoLuu(star.ten)),
     ...satStarsTail,
+    ...satStarsBase.filter((star) => laSaoLuu(star.ten)),
   ];
   const mainStarsHienThi = sapXepChinhTinhTheoCap(mainStars);
   const tenCungChoThan = isThan ? (STAR_SHORT_NAME[title] ?? title) : title;
@@ -1299,14 +1301,14 @@ function PalaceBox({
         <div className="absolute right-0 top-0 text-right text-[12px] font-bold text-[#0f4c81]">
           {topRight ?? ""}
         </div>
-        <div className="px-6 text-center text-[13px] leading-3 font-bold text-black whitespace-nowrap">
+        <div className="px-6 text-center text-[12px] leading-3 font-bold text-black whitespace-nowrap">
           <span className="inline-block max-w-full whitespace-nowrap">
             {palaceTitle}
           </span>
         </div>
       </div>
 
-      <div className="mt-1.5 min-h-10 text-center text-[14px] leading-4 font-bold text-black">
+      <div className="mt-1.5 min-h-10 text-center text-[14.5px] leading-4 font-bold text-black">
         {mainStarsHienThi.map((star) => (
           <div key={star.ten} className={starTextClass(star)}>
             {renderTenSaoCoTrangThaiKeThua(star, trangThaiSaoToanLaSo)}
