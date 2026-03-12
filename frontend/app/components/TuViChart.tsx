@@ -1014,7 +1014,7 @@ function tinhQuanHeCucMenh(data: TuViResponse): string {
   }
 
   if (hanhCuc === hanhMenh) {
-    return "Cục Mệnh bình hòa";
+    return "Mệnh Cục bình hòa";
   }
   if (NGU_HANH_SINH[hanhCuc] === hanhMenh) {
     return "Cục sinh Mệnh";
@@ -1467,6 +1467,10 @@ export function TuViChart({ data }: { data: TuViResponse }) {
     if (!cungThan) {
       return "--";
     }
+    if (cungThan.ten_cung == "Mệnh"){
+      return "Thân Mệnh đồng cung";
+    }
+
     return `Thân cư ${cungThan.ten_cung}`;
   }, [byIndex, data.cung_than_idx]);
 

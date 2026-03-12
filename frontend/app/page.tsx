@@ -458,14 +458,14 @@ export default function Home() {
 
                   {laSoData ? (
                     <div className="mx-auto mt-7 max-w-6xl">
-                      <div className="mb-3 flex items-center justify-end">
+                      <div className="mb-3 flex items-center justify-center">
                         <button
                           type="button"
                           onClick={handleDownloadChart}
                           disabled={downloading}
                           className={cn(
-                            "inline-flex h-9 items-center justify-center rounded-md bg-[#DA251D] px-4 text-sm font-semibold text-white",
-                            "disabled:cursor-not-allowed disabled:opacity-70",
+                            "inline-flex h-9 items-center justify-center rounded-md bg-[#0004ff] px-4 text-sm font-semibold text-white",
+                            "disabled:cursor-not-allowed disabled:opacity-70 ",
                           )}
                         >
                           {downloading ? "Đang tải..." : "Tải lá số"}
