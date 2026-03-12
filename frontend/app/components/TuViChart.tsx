@@ -581,9 +581,9 @@ function chuanHoaTrangThaiSao(rawStatus?: string): TrangThaiSao | undefined {
 
   return key
     ? {
-        key,
-        label: TRANG_THAI_SAO_LABEL[key],
-      }
+      key,
+      label: TRANG_THAI_SAO_LABEL[key],
+    }
     : undefined;
 }
 
@@ -1014,7 +1014,7 @@ function tinhQuanHeCucMenh(data: TuViResponse): string {
   }
 
   if (hanhCuc === hanhMenh) {
-    return "Cục Mệnh Bình Hòa";
+    return "Cục Mệnh bình hòa";
   }
   if (NGU_HANH_SINH[hanhCuc] === hanhMenh) {
     return "Cục sinh Mệnh";
@@ -1344,12 +1344,12 @@ function PalaceBox({
           <div className="text-zinc-400"> </div>
         )}
       </div>
-      <div className="mt-3 -py-2 grid grid-cols-3 items-center text-[12px] font-semibold text-black">
+      <div className="mt-3 -py-2 grid grid-cols-3 items-center text-[12px] text-black">
         <span
           className={cn(
             "justify-self-start text-[12px]",
             isTieuVan
-              ? "rounded bg-[#FF0000] px-1 py-px font-bold text-white"
+              ? "rounded bg-[#FF0000] px-1 py-px font-normal text-white"
               : "text-[#000000]",
           )}
         >
@@ -1358,12 +1358,12 @@ function PalaceBox({
         <span className="justify-self-center text-center text-[13px] font-bold text-zinc-800 whitespace-nowrap">
           {trangSinhStars.length
             ? (() => {
-                const { tenSao } = tachTenSaoVaTrangThai(trangSinhStars[0].ten);
-                return tenSao;
-              })()
+              const { tenSao } = tachTenSaoVaTrangThai(trangSinhStars[0].ten);
+              return tenSao;
+            })()
             : ""}
         </span>
-        <span className="justify-self-end text-[13px]">{bottomHint ?? ""}</span>
+        <span className="justify-self-end text-[13px] font-normal">{bottomHint ?? ""}</span>
       </div>
     </div>
   );
@@ -1468,7 +1468,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
       return "--";
     }
     return `Thân cư ${cungThan.ten_cung}`;
-}, [byIndex, data.cung_than_idx]);
+  }, [byIndex, data.cung_than_idx]);
 
   return (
     <div className="bg-[#000000]">
@@ -1585,7 +1585,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                     <span className="font-bold text-[#000000]">
                       Họ tên:
                     </span>
-                    <span className="text-[#0004ff] font-normal">{data.ho_ten}</span>
+                    <span className="text-[#0004ff] font-normal whitespace-nowrap">{data.ho_ten}</span>
                   </div>
                   <span />
                 </div>
@@ -1652,7 +1652,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                   <span className="font-bold">Tuổi:</span>
-                  <span className="text-[#0004ff] font-normal">{tuoi ?? "--"} tuổi</span>
+                  <span className="text-[#0004ff] font-normal">{tuoi != null ? tuoi + 1 : "--"} tuổi</span>
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums pt-3">
