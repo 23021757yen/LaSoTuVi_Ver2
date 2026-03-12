@@ -61,6 +61,7 @@ export type TuViResponse = {
   phut_sinh: number;
   loai_lich_nhap: string;
   nam_xem_han: number;
+  tuoi_am_nam_xem_han: number;
   can_chi_nam_xem_han: string;
   am_duong_menh: string;
   am_lich: {
@@ -1656,7 +1657,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
                   <span className="font-bold">Tuổi:</span>
-                  <span className="text-[#0004ff] font-normal">{tuoi != null ? tuoi + 1 : "--"} tuổi</span>
+                  <span className="text-[#0004ff] font-normal">{data.tuoi_am_nam_xem_han} tuổi</span>
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums pt-3">
