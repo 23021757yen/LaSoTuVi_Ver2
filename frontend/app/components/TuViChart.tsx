@@ -1467,7 +1467,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
     if (!cungThan) {
       return "--";
     }
-    if (cungThan.ten_cung == "Mệnh"){
+    if (cungThan.ten_cung == "Mệnh") {
       return "Thân Mệnh đồng cung";
     }
 
@@ -1487,6 +1487,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
           const topLeft = `${vietTatCan(canCung)}.${chiCung}`;
           const thangVan = vanThangTheoCung[item.idx];
           const bottomRight = Number.isFinite(thangVan) ? `Th.${thangVan}` : "";
+
 
           return (
             <div
@@ -1543,6 +1544,12 @@ export function TuViChart({ data }: { data: TuViResponse }) {
             className="m-auto h-[70%] item-center justify-item-center pointer-events-none absolute inset-0 z-0 bg-center bg-no-repeat bg-contain opacity-5"
             style={{ backgroundImage: "url('/lasotuvi.png')" }}
             aria-hidden="true"
+          />
+
+          <img
+            src="/pic/battu_off.png"
+            alt="battu"
+            className="pointer-events-none absolute -bottom-1 -right-0.5 z-20 w-15 opacity-80"
           />
 
           {tamGiacNeoDungCung ? (
