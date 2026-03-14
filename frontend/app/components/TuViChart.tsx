@@ -1477,7 +1477,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
 
   return (
     <div className="bg-[#000000]">
-      <div className="relative grid aspect-3/4 grid-cols-4 grid-rows-4 border-[0.1px] border-zinc-950">
+      <div className="relative grid aspect-3.1/4.5 grid-cols-4 grid-rows-4 border-[0.1px] border-zinc-950">
         {PALACE_LAYOUT.map((item) => {
           const palace = byIndex[item.idx];
           const stars =
