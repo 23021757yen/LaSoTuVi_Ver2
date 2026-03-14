@@ -1309,7 +1309,7 @@ function PalaceBox({
         </div>
       </div>
 
-      <div className="mt-1.5 min-h-10 text-center text-[14.5px] leading-4 font-bold text-black">
+      <div className="mt-1.5 min-h-9 text-center text-[14.5px] leading-4 font-bold text-black">
         {mainStarsHienThi.map((star) => (
           <div key={star.ten} className={starTextClass(star)}>
             {renderTenSaoCoTrangThaiKeThua(star, trangThaiSaoToanLaSo)}
