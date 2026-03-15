@@ -1604,7 +1604,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
 
                 <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
                   <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
-                    <span className="font-bold">Năm:</span>
+                    <span className="font-bold text-[#000000]">Năm:</span>
                     <span className="text-[#0004ff]  font-normal">
                       {ngayThangNamDuong.nam || "--"}
                     </span>
@@ -1616,7 +1616,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
 
                 <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
                   <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
-                    <span className="font-bold">Tháng:</span>
+                    <span className="font-bold text-[#000000]">Tháng:</span>
                     <span className="text-[#0004ff] font-normal">
                       {pad2(ngayThangNamDuong.thang)} (
                       {pad2(data.am_lich.thang_am)})
@@ -1629,7 +1629,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
 
                 <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
                   <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
-                    <span className="font-bold">Ngày:</span>
+                    <span className="font-bold text-[#000000]">Ngày:</span>
                     <span className="text-[#0004ff] font-normal">
                       {pad2(ngayThangNamDuong.ngay)} (
                       {pad2(data.am_lich.ngay_am)})
@@ -1642,7 +1642,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
 
                 <div className="grid grid-cols-[1fr_auto] items-center gap-x-2">
                   <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
-                    <span className="font-bold">Giờ:</span>
+                    <span className="font-bold text-[#000000]">Giờ:</span>
                     <span className="text-[#0004ff] whitespace-nowrap font-normal">
                       {pad2(data.gio_sinh)} giờ {pad2(data.phut_sinh)} phút
                     </span>
@@ -1668,19 +1668,19 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums pt-3">
-                  <span className="font-bold whitespace-nowrap">
+                  <span className="font-bold whitespace-nowrap text-[#000000]">
                     Âm Dương:
                   </span>
                   <span className="text-[#0004ff] font-normal">{data.am_duong_menh}</span>
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-3">
-                  <span className="font-bold">Mệnh:</span>
+                  <span className="font-bold text-[#000000]">Mệnh:</span>
                   <span className="text-[#0004ff] font-normal">{banMenhTrungTam}</span>
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-3">
-                  <span className="font-bold">Cục:</span>
+                  <span className="font-bold text-[#000000]">Cục:</span>
                   <span className="text-[#0004ff] whitespace-nowrap font-normal">
                     {data.cuc_menh.ten_cuc}
                   </span>
