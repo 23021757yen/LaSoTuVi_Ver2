@@ -126,10 +126,41 @@ export default function Home() {
   const [laSoData, setLaSoData] = React.useState<TuViResponse | null>(null);
   const chartCaptureRef = React.useRef<HTMLDivElement | null>(null);
 
+  const waitForChartImages = React.useCallback(async () => {
+    if (!chartCaptureRef.current) {
+      return;
+    }
+
+    const imgs = Array.from(chartCaptureRef.current.querySelectorAll("img"));
+
+    await Promise.all(
+      imgs.map(
+        (img) =>
+          new Promise<void>((resolve) => {
+            if (img.complete && img.naturalWidth > 0) {
+              resolve();
+              return;
+            }
+
+            const onDone = () => {
+              img.removeEventListener("load", onDone);
+              img.removeEventListener("error", onDone);
+              resolve();
+            };
+
+            img.addEventListener("load", onDone, { once: true });
+            img.addEventListener("error", onDone, { once: true });
+          }),
+      ),
+    );
+  }, []);
+
   const generateChartImage = React.useCallback(async () => {
     if (!chartCaptureRef.current || !laSoData) {
       return "";
     }
+
+    await waitForChartImages();
 
     const dataUrl = await toPng(chartCaptureRef.current, {
       cacheBust: true,
@@ -138,7 +169,7 @@ export default function Home() {
     });
 
     return dataUrl;
-  }, [laSoData]);
+  }, [laSoData, waitForChartImages]);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -527,7 +558,7 @@ export default function Home() {
 
                       <div
                         aria-hidden="true"
-                        className="pointer-events-none fixed-left-[10000px] top-0 z-[-1] h-0 w-0 overflow-hidden opacity-0"
+                        className="pointer-events-none fixed -left-[10000px] top-0 z-[-1] h-0 w-0 overflow-hidden opacity-0"
                       >
                         <div ref={chartCaptureRef} className="inline-block bg-white p-2">
                           <div className="w-170 md:w-170">
