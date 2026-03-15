@@ -1654,7 +1654,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
 
                 <div className="grid grid-cols-[1fr_auto] items-center gap-x-2 pt-3">
                   <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
-                    <span className="font-bold whitespace-nowrap">Năm xem:</span>
+                    <span className="font-bold whitespace-nowrap text-[#000000]">Năm xem:</span>
                     <span className="text-[#0004ff] font-normal">{data.nam_xem_han}</span>
                   </div>
                   <span className="w-13 justify-self-start whitespace-nowrap text-left text-[#0004ff] font-normal">
@@ -1663,7 +1663,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
                 </div>
 
                 <div className="grid grid-cols-[60px_1fr] items-center gap-x-3 tabular-nums">
-                  <span className="font-bold">Tuổi:</span>
+                  <span className="font-bold text-[#000000]">Tuổi:</span>
                   <span className="text-[#0004ff] font-normal">{data.tuoi_am_nam_xem_han} tuổi</span>
                 </div>
 
