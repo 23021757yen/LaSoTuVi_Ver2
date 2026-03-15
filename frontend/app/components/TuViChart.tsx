@@ -1550,7 +1550,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
           <img
             src="/battu_off (2).png"
             alt="battu"
-            className="pointer-events-none absolute -bottom-1 -right-0.5 z-20 w-15 opacity-80"
+            className="pointer-events-none absolute -bottom-1 -right-0.5 z-20 w-13.5 opacity-80"
           />
 
           {tamGiacNeoDungCung ? (
