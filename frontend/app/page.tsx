@@ -120,12 +120,68 @@ export default function Home() {
 
   const [loading, setLoading] = React.useState(false);
   const [downloading, setDownloading] = React.useState(false);
+  const [generatingChartImage, setGeneratingChartImage] = React.useState(false);
+  const [chartImageDataUrl, setChartImageDataUrl] = React.useState<string>("");
   const [apiError, setApiError] = React.useState<string>("");
   const [laSoData, setLaSoData] = React.useState<TuViResponse | null>(null);
-  const chartExportRef = React.useRef<HTMLDivElement | null>(null);
+  const chartCaptureRef = React.useRef<HTMLDivElement | null>(null);
 
-  const handleDownloadChart = async () => {
-    if (!chartExportRef.current || !laSoData) {
+  const generateChartImage = React.useCallback(async () => {
+    if (!chartCaptureRef.current || !laSoData) {
+      return "";
+    }
+
+    const dataUrl = await toPng(chartCaptureRef.current, {
+      cacheBust: true,
+      pixelRatio: 2,
+      backgroundColor: "#ffffff",
+    });
+
+    return dataUrl;
+  }, [laSoData]);
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    const run = async () => {
+      if (!laSoData || !chartCaptureRef.current) {
+        setChartImageDataUrl("");
+        return;
+      }
+
+      setGeneratingChartImage(true);
+
+      try {
+        if (typeof document !== "undefined" && "fonts" in document) {
+          await document.fonts.ready;
+        }
+
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        const dataUrl = await generateChartImage();
+
+        if (!cancelled) {
+          setChartImageDataUrl(dataUrl);
+        }
+      } catch {
+        if (!cancelled) {
+          setChartImageDataUrl("");
+        }
+      } finally {
+        if (!cancelled) {
+          setGeneratingChartImage(false);
+        }
+      }
+    };
+
+    void run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [generateChartImage, laSoData]);
+
+  const handleDownloadChart = React.useCallback(async () => {
+    if (!chartCaptureRef.current || !laSoData) {
       return;
     }
 
@@ -133,10 +189,7 @@ export default function Home() {
     setDownloading(true);
 
     try {
-      const dataUrl = await toPng(chartExportRef.current, {
-        cacheBust: true,
-        pixelRatio: 2,
-      });
+      const dataUrl = chartImageDataUrl || (await generateChartImage());
 
       const fileSafeName = laSoData.ho_ten
         .trim()
@@ -153,7 +206,7 @@ export default function Home() {
     } finally {
       setDownloading(false);
     }
-  };
+  }, [chartImageDataUrl, generateChartImage, laSoData]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -472,12 +525,33 @@ export default function Home() {
                         </button>
                       </div>
 
-                      <div ref={chartExportRef} className="w-full overflow-x-auto bg-transparent pb-2">
-                        <div className="w-170">
-                          <div className="mt-3">
+                      <div
+                        aria-hidden="true"
+                        className="pointer-events-none fixed -left-[10000px] top-0 z-[-1] opacity-0"
+                      >
+                        <div ref={chartCaptureRef} className="inline-block bg-white p-2">
+                          <div className="min-w-170">
                             <TuViChart data={laSoData} />
                           </div>
                         </div>
+                      </div>
+
+                      <div className="mt-2 rounded-md border border-zinc-200 bg-white">
+                        {generatingChartImage ? (
+                          <p className="text-center text-sm text-zinc-500">Đang tạo ảnh...</p>
+                        ) : chartImageDataUrl ? (
+                          <div className="flex justify-center">
+                            <img
+                              src={chartImageDataUrl}
+                              alt="Ảnh lá số tử vi"
+                              className="mx-auto block h-auto w-full rounded-sm border border-zinc-100"
+                            />
+                          </div>
+                        ) : (
+                          <p className="text-center text-sm text-zinc-500">
+                            Chưa tạo được ảnh lá số. Vui lòng thử lại.
+                          </p>
+                        )}
                       </div>
                     </div>
                   ) : null}
@@ -520,7 +594,7 @@ export default function Home() {
                     </div>
                     <p className="mt-4 text-black leading-relaxed text-[14px]">
                       Sao Tử Vi: là sao đứng đầu trong hệ thống chính tinh của
-                      khoa Tử Vi, được xem như "đế tinh", tượng trưng cho quyền
+                      khoa Tử Vi, được xem như &quot;đế tinh&quot;, tượng trưng cho quyền
                       lực, uy nghi và khả năng lãnh đạo.
                     </p>
                   </div>
