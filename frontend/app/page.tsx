@@ -530,7 +530,7 @@ export default function Home() {
                         className="pointer-events-none fixed-left-[10000px] top-0 z-[-1] h-0 w-0 overflow-hidden opacity-0"
                       >
                         <div ref={chartCaptureRef} className="inline-block bg-white p-2">
-                          <div className="min-w-170">
+                          <div className="w-170">
                             <TuViChart data={laSoData} />
                           </div>
                         </div>

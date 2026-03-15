@@ -1289,7 +1289,7 @@ function PalaceBox({
   const topLeftClass = layClassNguHanhTheoDiaChi(diaChi);
 
   return (
-    <div className="flex h-full flex-col border-[0.1px] border-zinc-950 bg-[#e8e7e2] px-1 pt-3 pb-2">
+    <div className="flex h-full flex-col border-[0.1px] border-[#878783] bg-[#e8e7e2] px-1 pt-3 pb-2">
       <div className="relative min-h-3 leading-3">
         <div
           className={cn(
@@ -1477,7 +1477,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
 
   return (
     <div className="bg-[#000000]">
-      <div className="relative grid aspect-3.1/4.5 grid-cols-4 grid-rows-4 border-[0.1px] border-zinc-950">
+      <div className="relative grid aspect-3.1/4.5 grid-cols-4 grid-rows-4 border-[0.1px] border-[#878783]">
         {PALACE_LAYOUT.map((item) => {
           const palace = byIndex[item.idx];
           const stars =
@@ -1540,7 +1540,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
           </div>
         ) : null}
 
-        <div className="relative z-40 col-start-2 row-start-2 row-span-2 col-span-2 border-[0.1px] border-zinc-950 bg-[#e7e8e2] px-14 py-4 flex h-full flex-col overflow-hidden">
+        <div className="relative z-40 col-start-2 row-start-2 row-span-2 col-span-2 border-[0.1px] border-[#878783] bg-[#e7e8e2] px-14 py-4 flex h-full flex-col overflow-hidden">
           <div
             className="m-auto h-[70%] item-center justify-item-center pointer-events-none absolute inset-0 z-0 bg-center bg-no-repeat bg-contain opacity-5"
             style={{ backgroundImage: "url('/lasotuvi.png')" }}
@@ -1548,7 +1548,7 @@ export function TuViChart({ data }: { data: TuViResponse }) {
           />
 
           <img
-            src="/pic/battu_off.png"
+            src="/battu_off.png"
             alt="battu"
             className="pointer-events-none absolute -bottom-1 -right-0.5 z-20 w-15 opacity-80"
           />
